@@ -9,14 +9,18 @@ from tqdm import tqdm
 # if M >> N calculates HorDist, if M << N calculates VertDist
 # choose values of M and N so that graph is long and thin
 
+# add loss site at end of the tube and record probability that leaves the system
+
 N = 4 # y
 M = 40 # x - horizontal cylinder (M > N) only works if this is even
 gamma = 1.0
 steps = 200
+eta = 0.0 # loss rate
 
 G = nx.hexagonal_lattice_graph(N,M)
 
 nodes = G.number_of_nodes()
+print(nodes)
 edges = G.number_of_edges()
 
 pos = dict( (n, n) for n in G.nodes() ) # this gives positions on a square lattice
@@ -103,11 +107,25 @@ H += gamma*(Deg-Adj)
 # H[110,110] -= 10
 
 
+# sites on the top or right (according to geometry of graph) have high losses
+# when the particle arrives at the opposite side of the graph it exits the system
+
+if M < N:
+    for key, val in labels.items():
+        if (key[1] == 2*N+1 or key[1] == 2*N):
+            H[val,val] -= 1j*(eta/2)
+
+if M > N:
+    for key, val in labels.items():
+        if (key[0] == M):
+            H[val,val] -= 1j*(eta/2)
+
+###########
+
+
 meanDist = np.zeros(steps)
 runningAvg = np.zeros(steps)
 EndProb = np.zeros(steps)
-# ArrivalProb = 0.0
-# SubtractFromPsiN = np.zeros(nodes, dtype=complex)
 
 for step in tqdm(range(steps)):
     U = scipy.linalg.expm(-1j*H*step)
@@ -123,7 +141,6 @@ for step in tqdm(range(steps)):
     psi0 = psi0/(np.sqrt(sum(psi0)))
     psiN = np.dot(U,psi0)
 
-    # psiN -= SubtractFromPsiN
 
     weights = abs(psiN**2)
 
@@ -137,22 +154,19 @@ for step in tqdm(range(steps)):
 
     runningAvg[step] = (sum(meanDist[:step+1]))/(step+1)
 
-
-    # calculate probability at the end of the tube
-    if M < N:
-        for key, val in labels.items():
-            if (key[1] == 2*N+1 or key[1] == 2*N):
-                # ArrivalProb += weights[val]
-                # EndProb[step] = ArrivalProb
-                # SubtractFromPsiN[val] = psiN[val]
-                EndProb[step] += weights[val]
-    if M > N:
-        for key, val in labels.items():
-            if (key[0] == M):
-                # ArrivalProb += weights[val]
-                # EndProb[step] = ArrivalProb
-                # SubtractFromPsiN[val] = psiN[val]
-                EndProb[step] += weights[val]
+    if eta == 0.0:
+        # calculate probability at the end of the tube
+        if M < N:
+            for key, val in labels.items():
+                if (key[1] == 2*N+1 or key[1] == 2*N):
+                    EndProb[step] += weights[val]
+        if M > N:
+            for key, val in labels.items():
+                if (key[0] == M):
+                    EndProb[step] += weights[val]
+    
+    else:
+        EndProb[step] = 1 - sum(weights)
 
 
 # measure
