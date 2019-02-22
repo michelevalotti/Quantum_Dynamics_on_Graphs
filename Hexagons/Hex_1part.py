@@ -9,10 +9,10 @@ from tqdm import tqdm
 # if M >> N calculates HorDist, if M << N calculates VertDist
 # choose values of M and N so that graph is long and thin
 
-N = 30 # y
-M = 3 # x - horizontal cylinder (M > N) only works if this is even
+N = 4 # y
+M = 40 # x - horizontal cylinder (M > N) only works if this is even
 gamma = 1.0
-steps = 100
+steps = 200
 
 G = nx.hexagonal_lattice_graph(N,M)
 
@@ -106,6 +106,8 @@ H += gamma*(Deg-Adj)
 meanDist = np.zeros(steps)
 runningAvg = np.zeros(steps)
 EndProb = np.zeros(steps)
+# ArrivalProb = 0.0
+# SubtractFromPsiN = np.zeros(nodes, dtype=complex)
 
 for step in tqdm(range(steps)):
     U = scipy.linalg.expm(-1j*H*step)
@@ -113,13 +115,15 @@ for step in tqdm(range(steps)):
     if M < N:
         for key, val in labels.items():
             if (key[1] == 0 or key[1] == 1): # particle starts at the bottom (vertical cylinder)
-                psi0[val] = 1 # superposition of all nodes on the left
+                psi0[val] = 1 # superposition of all nodes on the bottom
     if M > N:
         for key, val in labels.items():
             if (key[0] == 0 or key[0] == 1): # particle starts on the left (horizontal cylinder)
                 psi0[val] = 1 # superposition of all nodes on the left
     psi0 = psi0/(np.sqrt(sum(psi0)))
     psiN = np.dot(U,psi0)
+
+    # psiN -= SubtractFromPsiN
 
     weights = abs(psiN**2)
 
@@ -133,14 +137,21 @@ for step in tqdm(range(steps)):
 
     runningAvg[step] = (sum(meanDist[:step+1]))/(step+1)
 
+
     # calculate probability at the end of the tube
     if M < N:
         for key, val in labels.items():
             if (key[1] == 2*N+1 or key[1] == 2*N):
+                # ArrivalProb += weights[val]
+                # EndProb[step] = ArrivalProb
+                # SubtractFromPsiN[val] = psiN[val]
                 EndProb[step] += weights[val]
     if M > N:
         for key, val in labels.items():
             if (key[0] == M):
+                # ArrivalProb += weights[val]
+                # EndProb[step] = ArrivalProb
+                # SubtractFromPsiN[val] = psiN[val]
                 EndProb[step] += weights[val]
 
 
