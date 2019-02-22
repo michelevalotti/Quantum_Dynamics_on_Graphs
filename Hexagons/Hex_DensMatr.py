@@ -7,12 +7,15 @@ from tqdm import tqdm
 
 # M and N are number of HEXAGONS (not lattice points) in x and y
 
+# for density matrix reproduce commutator and don't forget to multiply by dt
+
 N = 8 # y
 M = 8 # x - cylinder only works if this is even
 gamma = 1.0
-steps = 10
+steps = 20
 InitialPosn = 80
 decRate = 1.0
+dt = 0.06 # timestep for numerical integration
 
 G = nx.hexagonal_lattice_graph(N,M)
 
@@ -100,7 +103,7 @@ runningAvg = np.zeros(steps)
 psi0 = np.zeros(nodes,dtype=complex)
 psi0[InitialPosn] = 1
 psiN = np.outer(psi0,psi0)
-k = 0
+# k = 0
 
 for step in tqdm(range(steps)):
 
@@ -109,7 +112,7 @@ for step in tqdm(range(steps)):
     decOp = np.zeros((nodes,nodes), dtype=complex)
 
     for j in range(nodes):
-        proj = np.zeros(nodes)
+        proj = np.zeros(nodes, dtype=complex)
         proj[j] = 1
         projMatr = np.outer(proj,proj)
         decoherence = np.dot(projMatr, psiN)
@@ -119,17 +122,20 @@ for step in tqdm(range(steps)):
 
     # psiN += (np.dot(U,psiN)-np.dot(psiN,U)) - (decRate)*psiN + (decRate)*decOp
 
-    psiN_1 = (1-decRate)*decOp - (1-decRate)*psiN
+    # psiN += (1 - decRate*dt)*(psiN-(1j*gamma*dt*(np.dot(H,psiN)- np.dot(psiN.T,H)))) + decRate*dt*decOp
+    psiN += -(1j*gamma*dt*(np.dot(H,psiN)- np.dot(psiN.T,H))) - (decRate*dt*psiN) + (dt*decRate*decOp)
 
-    U = scipy.linalg.expm(-1j*H*k)
+    # U = scipy.linalg.expm(-1j*H*k)
 
-    psiN_0 = np.dot(U,psiN)
-    psiN_0 = np.dot(psiN_0,U.T)
+    # psiN_0 = np.dot(U,psiN)
+    # psiN_0 = np.dot(psiN_0,U.T)
 
-    psiN += psiN_0 + psiN_1
+    # psiN_0 = 
+
+    # psiN += psiN_0 + psiN_1
 
 
-    k += 0.06
+    # k += dt
 
     # # calculating avg distance is not very useful if the system doesn't evolve after it hits the boarder of the graph
     # # higher decRate means lower avg dist for same number of steps (before reacing edge)
