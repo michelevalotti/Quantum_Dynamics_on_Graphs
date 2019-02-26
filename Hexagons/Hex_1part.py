@@ -14,8 +14,8 @@ from tqdm import tqdm
 N = 4 # y
 M = 40 # x - horizontal cylinder (M > N) only works if this is even
 gamma = 1.0
-steps = 200
-eta = 0.0 # loss rate
+steps = 400
+eta = 1.0 # loss rate
 
 G = nx.hexagonal_lattice_graph(N,M)
 
@@ -207,9 +207,9 @@ edge_colors = np.average(edge_colors,axis=1)
 xAx = np.arange(steps)
 
 if M < N: # vertical graph
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7,8), dpi=200)
     gs1 = gridspec.GridSpec(10, 3)
-    gs1.update(hspace=0.0)
+    gs1.update(hspace=0.0, right=0.85)
 
     ax1 = fig.add_subplot(gs1[:,2])
 
@@ -217,23 +217,28 @@ if M < N: # vertical graph
     # nx.draw(G, pos=pos, labels=labels, edge_color=edge_colors)
     PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
     PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
-    plt.colorbar(PltNodes, label='Probability', shrink=0.9)
+    col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+    col1.ax.tick_params(labelsize=10)
+    # plt.colorbar(PltNodes, label='Probability', shrink=0.9, fontsize=10)
+    ax1.tick_params(labelsize=10)
 
     gs2=gridspec.GridSpec(10,3)
     gs2.update(left=0.1, right=0.85, hspace=0.0)
 
-    ax2 = fig.add_subplot(gs2[1:5,:2])
-    plt.xlabel('steps')
-    plt.ylabel('Prob Last state')
+    ax2 = fig.add_subplot(gs2[2:5,:2])
+    plt.xlabel('steps', fontsize=10)
+    plt.ylabel('Prob top state', fontsize=10)
     plt.plot(xAx, EndProb)
+    ax2.tick_params(labelsize=10)
 
-    ax3 = fig.add_subplot(gs2[5:9,:2])
-    plt.xlabel('steps')
-    plt.ylabel('avg distance from top')
+    ax3 = fig.add_subplot(gs2[5:8,:2])
+    plt.xlabel('steps', fontsize=10)
+    plt.ylabel('Distance from top', fontsize=10)
     plt.plot(xAx, runningAvg)
+    ax3.tick_params(labelsize=10)
 
 if M > N: # horizontal graph
-    fig = plt.figure()
+    fig = plt.figure(figsize=(7,8), dpi=200)
     gs1 = gridspec.GridSpec(10, 3)
     gs1.update(hspace=20.0)
 
@@ -243,19 +248,25 @@ if M > N: # horizontal graph
     # nx.draw(G, pos=pos, labels=labels, edge_color=edge_colors)
     PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
     PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
-    plt.colorbar(PltNodes, label='Probability', shrink=0.9)
+    col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+    col1.ax.tick_params(labelsize=10)
+    # plt.colorbar(PltNodes, label='Probability', shrink=0.9)
+    ax1.tick_params(labelsize=10)
+
 
     gs2=gridspec.GridSpec(10,3)
     gs2.update(left=0.125, right=0.745, hspace=0.0)
 
     ax2 = fig.add_subplot(gs2[4:7,:])
-    plt.xlabel('steps')
-    plt.ylabel('Prob Last state')
+    plt.xlabel('steps', fontsize=10)
+    plt.ylabel('Prob final state', fontsize=10)
     plt.plot(xAx, EndProb)
+    ax2.tick_params(labelsize=10)
 
     ax3 = fig.add_subplot(gs2[7:,:])
-    plt.xlabel('steps')
-    plt.ylabel('avg distance from end')
+    plt.xlabel('steps', fontsize=10)
+    plt.ylabel('Distance from end', fontsize=10)
     plt.plot(xAx, runningAvg)
+    ax3.tick_params(labelsize=10)
 
 plt.show()

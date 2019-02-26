@@ -73,15 +73,16 @@ xAx = np.arange(N)
 
 # plot
 
-fig = plt.figure(figsize=(13,5))
+fig = plt.figure(figsize=(14,5), dpi=200)
 
 # plt.title('QRW and decoherence')
 
-# ax1 = fig.add_subplot(111)
+ax1 = fig.add_subplot(111)
 for m in range(len(decRates)):
 	plt.plot(xAx, probs[m], label='p = '+ str(decRates[m]))
-plt.legend()
-plt.xlabel('position')
-plt.ylabel('probability distribution')
+plt.legend(fontsize=10)
+plt.xlabel('position', fontsize=10)
+plt.ylabel('probability distribution', fontsize=10)
+ax1.tick_params(labelsize=10)
 
 plt.show()

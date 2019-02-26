@@ -7,9 +7,9 @@ from tqdm import tqdm # progress bar
 
 N = 17 # size of side of lattice #19
 gamma = 1.0 # hopping rate
-steps = 21 # steps quantum particles takes on lattice #11
+steps = 10 # steps quantum particles takes on lattice #11
 initialPosn = 8 #9
-decRate = 0.0 # decoherence rate -- starts to break normalization (decreasing probability with more steps, or higher than 1 if rate > 1)
+decRate = 1.0 # decoherence rate -- starts to break normalization (decreasing probability with more steps, or higher than 1 if rate > 1)
 
 Adj = np.zeros((N**2,N**2)) # cannot hop diagonally, enumerate 0-steps**2 starting top left and ending bottom right (going left to right, starting at left)
 degree = np.eye(N**2)
@@ -87,8 +87,8 @@ print(sum(probs), 'ProbTot Refl')
 
 probs = np.reshape(probs, (N,N))
 
-probsY = probs.sum(axis=0)
-probsX = probs.sum(axis=1)
+probsX = probs.sum(axis=0)
+probsY = probs.sum(axis=1)
 
 xAx = np.arange(N)
 
@@ -116,7 +116,7 @@ xAx = np.arange(N)
 
 # plot
 
-fig = plt.figure(figsize=(7.5,7))
+fig = plt.figure(figsize=(6,5), dpi=200)
 
 gs = gridspec.GridSpec(2, 2, width_ratios=[1, 4], height_ratios=[4, 1])
 
@@ -129,21 +129,23 @@ plt.axis('off')
 
 ax2 = plt.subplot(gs[0])
 plt.plot(probsY, xAx)
-plt.xlabel('$P_{tot}$')
-plt.ylabel('y', rotation=0)
+plt.xlabel('$P_{tot}$', fontsize=10)
+plt.ylabel('y', rotation=0, fontsize=10)
 ax2.xaxis.tick_top()
 ax2.xaxis.set_label_position('top') 
 ax2.yaxis.labelpad = 10
+ax2.tick_params(labelsize=10)
 
 
 ax3 = plt.subplot(gs[3])
 plt.plot(xAx, probsX)
-plt.ylabel('$P_{tot}$', rotation=0)
-plt.xlabel('x')
+plt.ylabel('$P_{tot}$', rotation=0, fontsize=10)
+plt.xlabel('x', fontsize=10)
 ax3.yaxis.tick_right()
 ax3.yaxis.set_label_position('right')
 ax3.yaxis.labelpad = 12
+ax3.tick_params(labelsize=10)
 
 plt.subplots_adjust(hspace=0.0, wspace=0.0)
-plt.subplots_adjust(left=0.06, right=0.9)
+plt.subplots_adjust(left=0.15, right=0.8)
 plt.show()

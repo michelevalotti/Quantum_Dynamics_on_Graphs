@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 import scipy.linalg
+from tqdm import tqdm
 
 N = 6 # size of side of lattice
 gamma = 1 # hopping rate
@@ -8,7 +9,7 @@ steps = 0
 init1 = 14 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
 init2 = 20 # initial posn of part2
 initialPosn = (init1*(N**2 - 1)) + (init2) # element of initial vector with value one
-stepsTot = 100 # steps quantum particles takes on lattice
+stepsTot = 20 # steps quantum particles takes on lattice
 eta = 1.0
 LossSite = 15
 
@@ -113,24 +114,24 @@ H = gamma*(degree-Adj)
 
 
 
-# SIMPLE MODEL OF LOSS
+# # SIMPLE MODEL OF LOSS
 
-# one site where there is prob particle 1 leaves the system, if it does, part2 also leaves
-# e.g. diatomic molecule bond breaks and atoms fly out
+# # one site where there is prob particle 1 leaves the system, if it does, part2 also leaves
+# # e.g. diatomic molecule bond breaks and atoms fly out
 
-for i in range(len(positions)):
-	if positions[i][0] == LossSite:
-		H[i,i] -= 1j*(eta/2)
+# for i in range(len(positions)):
+# 	if positions[i][0] == LossSite:
+# 		H[i,i] -= 1j*(eta/2)
 
 
-######
+# ######
 
 
 
 meanDist = np.zeros(stepsTot)
 runningAvg = np.zeros(stepsTot)
 
-for r in range(stepsTot):
+for r in tqdm(range(stepsTot)):
 
 
 	U = scipy.linalg.expm(-1j*H*steps)
@@ -148,8 +149,8 @@ for r in range(stepsTot):
 
 	runningAvg[r] = (sum(meanDist[:steps]))/steps
 
-	print(sum(weights))
-	print(steps)
+
+print(sum(weights))
 
 
 
@@ -158,21 +159,21 @@ for r in range(stepsTot):
 
 xAx = np.arange(stepsTot)
 
-fig = plt.figure()
+fig = plt.figure(figsize=(14,7), dpi=200)
 
-fig.suptitle('2 particles evolution with repulsion and loss - reflective edges', fontsize=8)
+# fig.suptitle('2 particles evolution with repulsion and loss - reflective edges', fontsize=8)
 
 ax1 = fig.add_subplot(211)
 plt.plot(xAx, meanDist)
-plt.xlabel('steps', fontsize=8, labelpad=1)
-plt.ylabel('instantaneous mean distance', fontsize=7)
-ax1.tick_params(labelsize=7)
+plt.xlabel('steps', fontsize=10, labelpad=1)
+plt.ylabel('instantaneous distance', fontsize=10)
+ax1.tick_params(labelsize=10)
 
 ax2 = fig.add_subplot(212)
 plt.plot(xAx, runningAvg)
-plt.xlabel('steps', fontsize=8, labelpad=1)
-plt.ylabel('mean distance - running avg', fontsize=7)
-ax2.tick_params(labelsize=7)
+plt.xlabel('steps', fontsize=10, labelpad=1)
+plt.ylabel('running avg distance', fontsize=10)
+ax2.tick_params(labelsize=10)
 
 plt.subplots_adjust(hspace=0.3)
 

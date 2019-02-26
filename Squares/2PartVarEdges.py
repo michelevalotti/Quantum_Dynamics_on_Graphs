@@ -4,14 +4,14 @@ from matplotlib.colors import LogNorm
 import scipy.linalg
 from tqdm import tqdm # progress bar
 
-N = 6 # x size of side of lattice (keep M*N<=36)
-M = 6 # y size of lattice
+N = 15 # x size of side of lattice (keep M*N<=36)
+M = 1 # y size of lattice
 gamma = 1 # hopping rate
 steps = 0
-init1 = 14 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
-init2 = 21 # initial posn of part2
+init1 = 2 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
+init2 = 12 # initial posn of part2
 initialPosn = (init1*(N*M - 1)) + (init2-1) # element of initial vector with value one
-stepsTot = 100 # steps quantum particles takes on lattice
+stepsTot = 40 # steps quantum particles takes on lattice
 eta = 0.5 # loss rate
 LossSite = 13
 
@@ -88,17 +88,17 @@ ProbMatr = np.zeros((((M*N)**2) - (N*M),((M*N)**2) - (N*M)))
 for n in range(((M*N)**2) - (N*M)):
 	for m in range(((M*N)**2) - (N*M)):
 		if ((dist[m] <= DistSectors[0]) and (dist[n] <= DistSectors[0])):
-			ProbMatr[m,n] = 0.1
+			ProbMatr[m,n] = 1.0
 		elif (dist[m] < DistSectors[0] and dist[n] >= DistSectors[0]) or (dist[m] >= DistSectors[0] and dist[n] < DistSectors[0]):
 			ProbMatr[m,n] = 0.9
 		elif (((dist[m] > DistSectors[0]) and (dist[n] > DistSectors[0])) and ((dist[m] <= DistSectors[1]) and (dist[n] <= DistSectors[1]))):
-			ProbMatr[m,n] = 0.5
+			ProbMatr[m,n] = 0.9
 		elif (dist[m] < DistSectors[1] and dist[n] >= DistSectors[1]) or (dist[m] >= DistSectors[1] and dist[n] < DistSectors[1]):
 			ProbMatr[m,n] = 0.9
 		elif (((dist[m] > DistSectors[1]) and (dist[n] > DistSectors[1])) and ((dist[m] <= DistSectors[2]) and (dist[n] <= DistSectors[2]))):
-			ProbMatr[m,n] = 1.0
+			ProbMatr[m,n] = 0.1
 		elif (positions[m][0] == positions[n][1]) and (positions[m][1] == positions[n][0]): # particles exchange position
-			ProbMatr[m,n] = 0.0
+			ProbMatr[m,n] = 1.0
 
 
 for i in range(((M*N)**2) - (N*M)):
@@ -116,16 +116,16 @@ if np.allclose(H, H.T):
 	print('Hamiltonian is symmetric')
 
 
-# SIMPLE MODEL OF LOSS
+# # SIMPLE MODEL OF LOSS
 
-# one site where there is prob particle 1 leaves the system, if it does, part2 also leaves
-# e.g. diatomic molecule bond breaks and atoms fly out
+# # one site where there is prob particle 1 leaves the system, if it does, part2 also leaves
+# # e.g. diatomic molecule bond breaks and atoms fly out
 
-for i in range(len(positions)):
-	if positions[i][0] == LossSite:
-		H[i,i] -= 1j*(eta/2)
+# for i in range(len(positions)):
+# 	if positions[i][0] == LossSite:
+# 		H[i,i] -= 1j*(eta/2)
 
-#######
+# #######
 
 
 
@@ -224,21 +224,21 @@ print('total probability: ', sum(weights))
 
 xAx = np.arange(stepsTot)
 
-fig = plt.figure(figsize=(7,4))
+fig = plt.figure(figsize=(8,5), dpi=200)
 
 # fig.suptitle('2 particles evolution - reflective edges - shape of graph: '+str(N)+' x '+ str(M), fontsize=8)
 
 ax1 = fig.add_subplot(211)
 plt.plot(xAx, meanDist)
-plt.xlabel('steps', fontsize=8, labelpad=1)
-plt.ylabel('instantaneous distance', fontsize=7)
-ax1.tick_params(labelsize=7)
+plt.xlabel('steps', fontsize=10, labelpad=1)
+plt.ylabel('instantaneous distance', fontsize=10)
+ax1.tick_params(labelsize=10)
 
 ax2 = fig.add_subplot(212)
 plt.plot(xAx, runningAvg)
-plt.xlabel('steps', fontsize=8, labelpad=1)
-plt.ylabel('mean distance', fontsize=7)
-ax2.tick_params(labelsize=7)
+plt.xlabel('steps', fontsize=10, labelpad=1)
+plt.ylabel('mean distance', fontsize=10)
+ax2.tick_params(labelsize=10)
 
 plt.subplots_adjust(hspace=0.0)
 

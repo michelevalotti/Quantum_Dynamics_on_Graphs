@@ -110,15 +110,16 @@ probsTorus = np.reshape(probsTorus, (N,N))
 
 
 
-fig = plt.figure(figsize=(5,7))
+fig = plt.figure(figsize=(4,7), dpi=200)
 
 ax1 = fig.add_subplot(211)
 
 col1 = ax1.pcolor(probs)
 cbar1 = fig.colorbar(col1)
 
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlabel('x', fontsize=10)
+plt.ylabel('y', fontsize=10)
+ax1.tick_params(labelsize=10)
 # plt.title('Continuous QRW reflective edges -- '+str(steps)+' steps and hopping rate = '+str(gamma))
 
 plt.xlim(0, N)
@@ -130,8 +131,9 @@ ax2 = fig.add_subplot(212)
 col2 = ax2.pcolor(probsTorus)
 cbar2 = fig.colorbar(col2)
 
-plt.xlabel('x')
-plt.ylabel('y')
+plt.xlabel('x', fontsize=10)
+plt.ylabel('y', fontsize=10)
+ax2.tick_params(labelsize=10)
 # plt.title('Continuous QRW Torus -- '+str(steps)+' steps and hopping rate = '+str(gamma))
 
 plt.xlim(0, N)

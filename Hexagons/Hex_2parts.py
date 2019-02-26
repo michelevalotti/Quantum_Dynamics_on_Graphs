@@ -8,11 +8,11 @@ from tqdm import tqdm
 # M and N are number of HEXAGONS (not lattice points) in x and y
 
 N = 1 # y
-M = 2 # x - cylinder only works if this is even
-gamma = 0.5
-steps = 2
-InitialPosn1 = 1 #13
-InitialPosn2 = 0 #20
+M = 6 # x - cylinder only works if this is even
+gamma = 1.0
+steps = 7
+InitialPosn1 = 5 #13
+InitialPosn2 = 20 #20
 
 G = nx.hexagonal_lattice_graph(N,M)
 
@@ -81,6 +81,7 @@ for k in range(nodes-1,-1,-1):
 
 AdjSize = len(Adj)
 
+print('Adj done')
 
 # distance - cartesian
 
@@ -99,6 +100,7 @@ for key, val in DistDict.items():
     Distances[b] = DistDict[key]
     b+=1
 
+print('distances calculated')
 
 # attraction or repulsion (change DistMx values)
 
@@ -142,7 +144,8 @@ for step in tqdm(range(steps)):
 	psi0_1[InitialPosn1] = 1
 	psi0_2 = np.zeros(nodes)
 	psi0_2[InitialPosn2] = 1
-	psi0 = np.kron(psi0_1,psi0_2)
+	psi0 = (np.kron(psi0_1,psi0_2) - np.kron(psi0_2,psi0_1))/(np.sqrt(2))
+	# psi0 = np.kron(psi0_1, psi0_2)
 	for k in range(nodes-1,-1,-1):
 		psi0 = np.delete(psi0, (k*(nodes+1)))
 	psiN = np.dot(U,psi0)
@@ -153,6 +156,7 @@ for step in tqdm(range(steps)):
 	meanDist[step] = sum(weightedDist)/(sum(weights))
 
 	runningAvg[step] = (sum(meanDist[:step+1]))/(step+1)
+
 
 # measure
 
@@ -221,7 +225,7 @@ edge_colors2 = np.average(edge_colors2,axis=1)
 
 # draw
 
-fig = plt.figure()
+fig = plt.figure(figsize=(12,6), dpi=200)
 
 gs1 = gridspec.GridSpec(3, 3)
 gs1.update(left=0.1, right=1.0, wspace=0.0, hspace=0.0)
