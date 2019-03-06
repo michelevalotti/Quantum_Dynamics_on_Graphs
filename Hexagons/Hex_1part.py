@@ -5,7 +5,7 @@ import numpy as np
 import scipy.linalg
 from tqdm import tqdm
 
-def ArrivalProbability(N,M,gamma,steps,eta):
+def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
     G = nx.hexagonal_lattice_graph(N,M)
 
     nodes = G.number_of_nodes()
@@ -49,10 +49,18 @@ def ArrivalProbability(N,M,gamma,steps,eta):
 
     if M > N:
         # join top and bottom edge (horizontal cylinder)
-        for key,value in labels.items():
-            if (key[1] == 0 or ((key[1] == 1) and (key[0] != 0))):
-                Adj[value+(2*N), value] = 1
-                Adj[value, value+(2*N)] = 1
+        if ChiralShift != 0:
+            for key,value in labels.items():
+                if (key[1] == 0 or key[1] == 1):
+                    for k,v in labels.items():
+                        if (k[1] == key[1]+(2*N)) and (k[0] == key[0]+(2*ChiralShift)):
+                            Adj[v, value] = 1
+                            Adj[value, v] = 1
+        else:
+            for key,value in labels.items():
+                if (key[1] == 0 or ((key[1] == 1) and (key[0] != 0))):
+                    Adj[value+(2*N), value] = 1
+                    Adj[value, value+(2*N)] = 1
 
     if M < N:
         # join left and right sides of the cylinder (vertical tube)
@@ -277,9 +285,10 @@ if __name__ == "__main__":
     gamma = 1.0
     steps = 200
     eta = 1.0 # loss rate
+    ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
 
 
-    myValues = ArrivalProbability(N,M,gamma,steps,eta)
+    myValues = ArrivalProbability(N,M,gamma,steps,eta,ChiralShift)
 
     G = myValues[0]
     pos = myValues[1]
