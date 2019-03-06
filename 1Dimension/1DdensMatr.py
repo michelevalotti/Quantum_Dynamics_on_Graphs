@@ -80,9 +80,9 @@ fig = plt.figure(figsize=(14,5), dpi=200)
 ax1 = fig.add_subplot(111)
 for m in range(len(decRates)):
 	plt.plot(xAx, probs[m], label='p = '+ str(decRates[m]))
-plt.legend(fontsize=10)
-plt.xlabel('position', fontsize=10)
-plt.ylabel('probability distribution', fontsize=10)
-ax1.tick_params(labelsize=10)
+plt.legend(fontsize=14)
+plt.xlabel('position', fontsize=14)
+plt.ylabel('probability distribution', fontsize=14)
+ax1.tick_params(labelsize=14)
 
 plt.show()

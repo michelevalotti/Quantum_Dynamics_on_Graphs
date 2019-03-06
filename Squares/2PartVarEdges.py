@@ -4,14 +4,14 @@ from matplotlib.colors import LogNorm
 import scipy.linalg
 from tqdm import tqdm # progress bar
 
-N = 15 # x size of side of lattice (keep M*N<=36)
-M = 1 # y size of lattice
-gamma = 1 # hopping rate
+N = 6 # x size of side of lattice (keep M*N<=36)
+M = 6 # y size of lattice
+gamma = 1.0 # hopping rate
 steps = 0
-init1 = 2 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
-init2 = 12 # initial posn of part2
+init1 = 14 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
+init2 = 21 # initial posn of part2
 initialPosn = (init1*(N*M - 1)) + (init2-1) # element of initial vector with value one
-stepsTot = 40 # steps quantum particles takes on lattice
+stepsTot = 20 # steps quantum particles takes on lattice
 eta = 0.5 # loss rate
 LossSite = 13
 
@@ -90,11 +90,11 @@ for n in range(((M*N)**2) - (N*M)):
 		if ((dist[m] <= DistSectors[0]) and (dist[n] <= DistSectors[0])):
 			ProbMatr[m,n] = 1.0
 		elif (dist[m] < DistSectors[0] and dist[n] >= DistSectors[0]) or (dist[m] >= DistSectors[0] and dist[n] < DistSectors[0]):
-			ProbMatr[m,n] = 0.9
+			ProbMatr[m,n] = 0.1
 		elif (((dist[m] > DistSectors[0]) and (dist[n] > DistSectors[0])) and ((dist[m] <= DistSectors[1]) and (dist[n] <= DistSectors[1]))):
-			ProbMatr[m,n] = 0.9
+			ProbMatr[m,n] = 0.4
 		elif (dist[m] < DistSectors[1] and dist[n] >= DistSectors[1]) or (dist[m] >= DistSectors[1] and dist[n] < DistSectors[1]):
-			ProbMatr[m,n] = 0.9
+			ProbMatr[m,n] = 0.1
 		elif (((dist[m] > DistSectors[1]) and (dist[n] > DistSectors[1])) and ((dist[m] <= DistSectors[2]) and (dist[n] <= DistSectors[2]))):
 			ProbMatr[m,n] = 0.1
 		elif (positions[m][0] == positions[n][1]) and (positions[m][1] == positions[n][0]): # particles exchange position
@@ -230,15 +230,15 @@ fig = plt.figure(figsize=(8,5), dpi=200)
 
 ax1 = fig.add_subplot(211)
 plt.plot(xAx, meanDist)
-plt.xlabel('steps', fontsize=10, labelpad=1)
-plt.ylabel('instantaneous distance', fontsize=10)
-ax1.tick_params(labelsize=10)
+plt.xlabel('steps', fontsize=14, labelpad=1)
+plt.ylabel('inst distance', fontsize=14)
+ax1.tick_params(labelsize=14)
 
 ax2 = fig.add_subplot(212)
 plt.plot(xAx, runningAvg)
-plt.xlabel('steps', fontsize=10, labelpad=1)
-plt.ylabel('mean distance', fontsize=10)
-ax2.tick_params(labelsize=10)
+plt.xlabel('steps', fontsize=14, labelpad=1)
+plt.ylabel('mean distance', fontsize=14)
+ax2.tick_params(labelsize=14)
 
 plt.subplots_adjust(hspace=0.0)
 

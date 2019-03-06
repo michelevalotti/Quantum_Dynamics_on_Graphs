@@ -4,7 +4,7 @@ import scipy.linalg
 
 N = 31 # size of side of lattice (best if odd)
 gamma = 0.3 # hopping rate
-steps = 40 # steps quantum particles takes on lattice
+steps = 15 # steps quantum particles takes on lattice
 potPsn = 67
 
 Zero = np.array([1,0]) # ket 0
@@ -64,15 +64,15 @@ for i in range(N**2):
 
 H = gamma*(degree-Adj)
 
-# add potential to reflective edges
-H[potPsn,potPsn] += 8
+# # add potential to reflective edges
+# H[potPsn,potPsn] += 8
 
 U = scipy.linalg.expm(-1j*H*steps)
 
 Htorus = gamma*(degreeTorus-AdjTorus)
 
-# add potential to torus
-Htorus[potPsn,potPsn] += 8
+# # add potential to torus
+# Htorus[potPsn,potPsn] += 8
 
 Utorus = scipy.linalg.expm(-1j*Htorus*steps)
 
@@ -116,10 +116,11 @@ ax1 = fig.add_subplot(211)
 
 col1 = ax1.pcolor(probs)
 cbar1 = fig.colorbar(col1)
+cbar1.ax.tick_params(labelsize=14)
 
-plt.xlabel('x', fontsize=10)
-plt.ylabel('y', fontsize=10)
-ax1.tick_params(labelsize=10)
+plt.xlabel('x', fontsize=14)
+plt.ylabel('y', fontsize=14)
+ax1.tick_params(labelsize=14)
 # plt.title('Continuous QRW reflective edges -- '+str(steps)+' steps and hopping rate = '+str(gamma))
 
 plt.xlim(0, N)
@@ -130,15 +131,17 @@ ax2 = fig.add_subplot(212)
 
 col2 = ax2.pcolor(probsTorus)
 cbar2 = fig.colorbar(col2)
+cbar2.ax.tick_params(labelsize=14)
 
-plt.xlabel('x', fontsize=10)
-plt.ylabel('y', fontsize=10)
-ax2.tick_params(labelsize=10)
+
+plt.xlabel('x', fontsize=14)
+plt.ylabel('y', fontsize=14)
+ax2.tick_params(labelsize=14)
 # plt.title('Continuous QRW Torus -- '+str(steps)+' steps and hopping rate = '+str(gamma))
 
 plt.xlim(0, N)
 plt.ylim(0, N)
 
-plt.subplots_adjust(hspace=0.5)
+plt.subplots_adjust(hspace=0.5, left=0.15, right=0.89)
 
 plt.show()

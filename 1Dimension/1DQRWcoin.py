@@ -126,7 +126,7 @@ plot(x_ax[1::], posnCl, color='b')
 # plot(arange(P)-100, posnCl, 'o', color=(1,0.6,0,1), markersize=3)
 setp(ax.get_xticklabels(), visible=False)
 setp(gca(), yticks=(0.01, 0.04, 0.07, 0.10), xticks=(-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100))
-ax.tick_params(labelsize=10)
+ax.tick_params(labelsize=14)
 
 
 
@@ -139,10 +139,10 @@ plot(x_ax[1::], posnCl, color='b', label='calssical walk')
 # plot(arange(P)-100, posnCl, 'o', color=(1,0.6,0,1), markersize=3)
 setp(ax_0.get_xticklabels(), visible=False)
 setp(gca(), yticks=(0.02, 0.06, 0.10, 0.14), xticks=(-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100))
-legend(loc=(1.02,1.7), fontsize=10)
-ax_0.tick_params(labelsize=10)
+legend(loc=(1.02,1.7), fontsize=14)
+ax_0.tick_params(labelsize=14)
 
-ylabel('Probability', fontsize=10)
+ylabel('Probability', fontsize=14)
 
 
 
@@ -154,9 +154,9 @@ plot(x_ax, prob_1, 'o', markersize=3, color=(1,0.65,0))
 plot(x_ax[1::], posnCl, color='b')
 # plot(arange(P)-100, posnCl, 'o', color=(1,0.6,0,1), markersize=3)
 setp(gca(), yticks=(0.02, 0.06, 0.10, 0.14), xticks=(-100, -80, -60, -40, -20, 0, 20, 40, 60, 80, 100))
-ax_1.tick_params(labelsize=10)
+ax_1.tick_params(labelsize=14)
 
-xlabel('Postion', fontsize=10)
+xlabel('Postion', fontsize=14)
 
 
 subplots_adjust(hspace=0, right=0.8)
