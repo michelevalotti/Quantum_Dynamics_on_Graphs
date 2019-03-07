@@ -149,7 +149,10 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
 
         meanDist[step] = sum(weightedDist)
 
-        runningAvg[step] = (sum(meanDist[:step+1]))/(step+1)
+        if M < N:
+            runningAvg[step] = 2*N - (sum(meanDist[:step+1]))/(step+1)
+        if M > N:
+            runningAvg[step] = M - (sum(meanDist[:step+1]))/(step+1)
 
         if eta == 0.0:
             # calculate probability at the end of the tube
@@ -234,7 +237,7 @@ def PlotTube():
 
         ax3 = fig.add_subplot(gs2[5:8,:2])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Distance from top', fontsize=12)
+        plt.ylabel('Avg Position', fontsize=12)
         plt.plot(xAx, runningAvg)
         ax3.tick_params(labelsize=12)
 
@@ -266,7 +269,7 @@ def PlotTube():
 
         ax3 = fig.add_subplot(gs2[7:,:])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Distance from end', fontsize=12)
+        plt.ylabel('Avg Position', fontsize=12)
         plt.plot(xAx, runningAvg)
         ax3.tick_params(labelsize=12)
 
@@ -280,8 +283,8 @@ if __name__ == "__main__":
 
     # add loss site at end of the tube and record probability that leaves the system
 
-    N = 20 # y
-    M = 2 # x - horizontal cylinder (M > N) only works if this is even
+    N = 2 # y
+    M = 20 # x - horizontal cylinder (M > N) only works if this is even
     gamma = 1.0
     steps = 200
     eta = 1.0 # loss rate
