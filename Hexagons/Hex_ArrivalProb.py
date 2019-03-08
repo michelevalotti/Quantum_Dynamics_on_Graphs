@@ -2,12 +2,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from Hex_1part import ArrivalProbability
 
-X = 6 # x - horizontal cylinder (M > N) only works if this is even
-Y = 4 # y
+
 HopRate = 1.0
 Steps = 200
 LossRate = 1.0 # loss rate -- keep high
 trials = 5
+
+X = 6 # x - horizontal cylinder (M > N) only works if this is even
+Y = 4 # y
 ChiralShift = 0
 
 StepsToArrivalHor_length = np.zeros(trials)
