@@ -7,7 +7,9 @@ import scipy.linalg
 from ClusterArrProb import ClusterGraph, ConnectRand, ConnectNext
 
 
-def StandardDeviation(G, steps, gamma):
+def StandardDeviation(G, ClusterLen, pos, steps, gamma=1.0):
+
+    TotNodes = G.number_of_nodes()
 
     Adj = nx.adjacency_matrix(G)
     Adj = Adj.todense()
@@ -26,9 +28,14 @@ def StandardDeviation(G, steps, gamma):
         psi0 = np.zeros(TotNodes, dtype=complex)
         xPosns = np.zeros(TotNodes)
         AvgStart = 0.0
+
+        MiddleX = (int((abs((pos[0])[0] - (pos[TotNodes-1])[0])/2)))
+
+
         for key, val in pos.items():
             xPosns[key] = val[0]
-            if (val[0] >= 40 and val[0] <= 50): # particle starts in the middle
+            # if (val[0] >= 40 and val[0] <= 50): # particle starts in the middle
+            if (val[0] >= (MiddleX) and val[0] <= (MiddleX+ClusterLen)): # particle starts in the middle
                 psi0[key] = 1 # superposition of all nodes in the middle
                 AvgStart += float(val[0])
         AvgStart = AvgStart/abs(sum(psi0))
@@ -53,19 +60,21 @@ if __name__ =='__main__':
     or fixed edges (random or next) and varying nodes'''
 
     MyVar = 'Nodes' # 'Nodes' or 'Edges' -- nodes for variable number of nodes, edges for variable number of edges
-    TrialsTot = 10 # avegrage over this many trials
-
-    '''high and low number of nodes for next conns, and high and low mumber of nodes for random conns'''
+    
+    TrialsTot = 30 # avegrage over this many trials
 
     # fixed variables
     Clusters = 5
+    ClusterLen = 10 # depends on graph making fn, specify for StdDev
     if MyVar == 'Nodes':
-        NextConns = 15
+        NextConns_low = 15
+        NextConns_high = 15
     if MyVar == 'Edges':
-        ClusterNodes = 10
+        ClusterNodes_low = 10
+        ClusterNodes_high = 10
         ClusterConnections = 20
     gamma = 1.0
-    steps = 20
+    steps = 30
 
 
     StandDevArr_next_low_avg = np.zeros(steps)
@@ -81,26 +90,26 @@ if __name__ =='__main__':
 
         # low nodes/edges graph
         if MyVar == 'Nodes':
-            ClusterNodes = 10
+            ClusterNodes_low = 10
             ClusterConnections = 20
         if MyVar == 'Edges':
-            NextConns = 15
+            NextConns_low = 15
 
-        G = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[0]
-        pos = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[1]
-        TotNodes = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[2]
+        G = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[0]
+        pos = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[1]
+        TotNodes = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[2]
 
         # next conns, low nodes/edges
-        G_next = ConnectNext(G, NextConns, Clusters)
-        StandDevArr_next_low = StandardDeviation(G_next, steps, gamma)[0]
+        G_next = ConnectNext(G, NextConns_low, Clusters)
+        StandDevArr_next_low = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[0]
         StandDevArr_next_low_avg += StandDevArr_next_low
-        probs_next = StandardDeviation(G_next, steps, gamma)[1]
+        probs_next = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[1]
 
         # rand conns, low nodes/edges
-        G_rand = ConnectRand(G, NextConns, Clusters)
-        StandDevArr_rand_low = StandardDeviation(G_rand, steps, gamma)[0]
+        G_rand = ConnectRand(G, NextConns_low, Clusters)
+        StandDevArr_rand_low = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[0]
         StandDevArr_rand_low_avg += StandDevArr_rand_low
-        probs_rand = StandardDeviation(G_rand, steps, gamma)[1]
+        probs_rand = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[1]
 
         if trial == 0:
             ax1 = fig.add_subplot(311)
@@ -112,26 +121,26 @@ if __name__ =='__main__':
 
         # high nodes/edges graph
         if MyVar == 'Nodes':
-            ClusterNodes = 40
+            ClusterNodes_high = 40
             ClusterConnections = 80
         if MyVar == 'Edges':
-            NextConns = 60
+            NextConns_high = 60
 
-        G = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[0]
-        pos = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[1]
-        TotNodes = ClusterGraph(Clusters, ClusterNodes, ClusterConnections)[2]
+        G = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[0]
+        pos = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[1]
+        TotNodes = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[2]
 
         # next conns, low nodes/edges
-        G_next = ConnectNext(G, NextConns, Clusters)
-        StandDevArr_next_high = StandardDeviation(G_next, steps, gamma)[0]
+        G_next = ConnectNext(G, NextConns_high, Clusters)
+        StandDevArr_next_high = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[0]
         StandDevArr_next_high_avg += StandDevArr_next_high
-        probs_next = StandardDeviation(G_next, steps, gamma)[1]
+        probs_next = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[1]
 
         # rand conns, low nodes/edges
-        G_rand = ConnectRand(G, NextConns, Clusters)
-        StandDevArr_rand_high = StandardDeviation(G_rand, steps, gamma)[0]
+        G_rand = ConnectRand(G, NextConns_high, Clusters)
+        StandDevArr_rand_high = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[0]
         StandDevArr_rand_high_avg += StandDevArr_rand_high
-        probs_rand = StandardDeviation(G_rand, steps, gamma)[1]
+        probs_rand = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[1]
 
         if trial == 0:
             ax2 = fig.add_subplot(312)
@@ -148,10 +157,18 @@ if __name__ =='__main__':
     
     
     ax3 = fig.add_subplot(313)
-    plt.plot(np.arange(steps), StandDevArr_next_low_avg, label='next-cluster connections - low')
-    plt.plot(np.arange(steps), StandDevArr_rand_low_avg, label='random connections - low')
-    plt.plot(np.arange(steps), StandDevArr_next_high_avg, label='next-cluster connections - high')
-    plt.plot(np.arange(steps), StandDevArr_rand_high_avg, label='random connections - high')
+
+    if MyVar == 'Nodes':
+        LabelVar_low = ClusterNodes_low
+        LabelVar_high = ClusterNodes_high
+    if MyVar == 'Edges':
+        LabelVar_low = NextConns_low
+        LabelVar_high = NextConns_high
+
+    plt.plot(np.arange(steps), StandDevArr_next_low_avg, label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar))
+    plt.plot(np.arange(steps), StandDevArr_rand_low_avg, label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar))
+    plt.plot(np.arange(steps), StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar))
+    plt.plot(np.arange(steps), StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar))
     plt.xlabel('steps')
     plt.ylabel('$\sigma_x$ from starting posn')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
