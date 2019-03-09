@@ -5,12 +5,12 @@ import numpy as np
 import scipy.linalg
 from tqdm import tqdm
 
-def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
-    G = nx.hexagonal_lattice_graph(N,M)
+def HexTube(HexX,HexY,ChiralShift):
+
+    G = nx.hexagonal_lattice_graph(HexY,HexX)
 
     nodes = G.number_of_nodes()
     print(nodes)
-    edges = G.number_of_edges()
 
     pos = dict( (n, n) for n in G.nodes() ) # this gives positions on a square lattice
 
@@ -30,15 +30,15 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
 
     # shift positions to make graph look like a hexagonal lattice
 
-    for key,value in pos.items():
-        if ((key[0]%2 == 0) and (key[1]%2 != 0)):
-            pos[key] = ((float(value[0]) - 0.15), value[1])
-        if ((key[0]%2 != 0) and (key[1]%2 != 0)):
-            pos[key] = ((float(value[0]) + 0.15), value[1])
-        if ((key[0]%2 == 0) and (key[1]%2 == 0)):
-            pos[key] = ((float(value[0]) + 0.15), value[1])
-        if ((key[0]%2 != 0) and (key[1]%2 == 0)):
-            pos[key] = ((float(value[0]) - 0.15), value[1])
+    for coord in range(len(coords)):
+        if ((coords[coord][0]%2 == 0) and (coords[coord][1]%2 != 0)):
+            coords[coord] = ((float(coords[coord][0]) - 0.15), coords[coord][1])
+        elif ((coords[coord][0]%2 != 0) and (coords[coord][1]%2 != 0)):
+            coords[coord] = ((float(coords[coord][0]) + 0.15), coords[coord][1])
+        elif ((coords[coord][0]%2 == 0) and (coords[coord][1]%2 == 0)):
+            coords[coord] = ((float(coords[coord][0]) + 0.15), coords[coord][1])
+        elif ((coords[coord][0]%2 != 0) and (coords[coord][1]%2 == 0)):
+            coords[coord] = ((float(coords[coord][0]) - 0.15), coords[coord][1])
 
 
 
@@ -47,30 +47,51 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
     Adj = nx.adjacency_matrix(G) # positions are labelled from lower left corner up, every column starts at the bottom
     Adj = Adj.todense()
 
-    if M > N:
+    if HexX > HexY:
         # join top and bottom edge (horizontal cylinder)
         if ChiralShift != 0:
             for key,value in labels.items():
                 if (key[1] == 0 or key[1] == 1):
                     for k,v in labels.items():
-                        if (k[1] == key[1]+(2*N)) and (k[0] == key[0]+(2*ChiralShift)):
+                        if (k[1] == key[1]+(2*HexY)) and (k[0] == key[0]+(2*ChiralShift)):
                             Adj[v, value] = 1
                             Adj[value, v] = 1
         else:
             for key,value in labels.items():
                 if (key[1] == 0 or ((key[1] == 1) and (key[0] != 0))):
-                    Adj[value+(2*N), value] = 1
-                    Adj[value, value+(2*N)] = 1
+                    Adj[value+(2*HexY), value] = 1
+                    Adj[value, value+(2*HexY)] = 1
 
-    if M < N:
+    if HexX < HexY:
         # join left and right sides of the cylinder (vertical tube)
         for key, value in labels.items():
-            if (key[0] == 0 and (key[1] != 0 and key[1] != (2*N+1))):
+            if (key[0] == 0 and (key[1] != 0 and key[1] != (2*HexY+1))):
                 for key1, value1 in labels.items():
-                    if (key1[1] == key[1] and (key1[0] == (key[0] + N))):
+                    if (key1[1] == key[1] and (key1[0] == (key[0] + HexY))):
                         Adj[value, value1] = 1
                         Adj[value1, value] = 1
 
+    pos = dict(zip(coordVal,coords))
+
+    LabelDict = dict(zip(G.nodes(),coordVal)) # rename nodes from 0 to nodes
+
+    G = nx.relabel_nodes(G,LabelDict)
+
+    return G,Adj,pos
+
+
+def ArrivalProbability(G,M,N,Adj,pos,steps,eta,gamma=1.0):
+
+    edges = G.number_of_edges()
+    nodes = G.number_of_nodes()
+    
+    coords = []
+    coordVal = []
+    for k,v in pos.items():
+        coords.append(v)
+        coordVal.append(k)
+
+    
 
     # degree matrix
 
@@ -82,6 +103,8 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
     # distance from end of the lattice
 
     CoordsDict = dict(zip(coordVal,coords))
+    labels = dict(zip(coords, coordVal))
+
 
     HorDist = np.zeros(nodes) # horizontal distance
     VertDist = np.zeros(nodes) # vertical distance
@@ -109,12 +132,12 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
 
     if M < N:
         for key, val in labels.items():
-            if (key[1] == 2*N+1 or key[1] == 2*N):
+            if (int(np.round(key[1])) == 2*N+1 or int(np.round(key[1])) == 2*N):
                 H[val,val] -= 1j*(eta/2)
 
     if M > N:
         for key, val in labels.items():
-            if (key[0] == M):
+            if (int(np.round(key[0])) == M):
                 H[val,val] -= 1j*(eta/2)
 
     ###########
@@ -129,11 +152,11 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
         psi0 = np.zeros(nodes)
         if M < N:
             for key, val in labels.items():
-                if (key[1] == 0 or key[1] == 1): # particle starts at the bottom (vertical cylinder)
+                if (int(np.round(key[1])) == 0 or int(np.round(key[1])) == 1): # particle starts at the bottom (vertical cylinder)
                     psi0[val] = 1 # superposition of all nodes on the bottom
         if M > N:
             for key, val in labels.items():
-                if (key[0] == 0 or key[0] == 1): # particle starts on the left (horizontal cylinder)
+                if (int(np.round(key[0])) == 0 or int(np.round(key[0])) == 1): # particle starts on the left (horizontal cylinder)
                     psi0[val] = 1 # superposition of all nodes on the left
         psi0 = psi0/(np.sqrt(sum(psi0)))
         psiN = np.dot(U,psi0)
@@ -158,11 +181,11 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
             # calculate probability at the end of the tube
             if M < N:
                 for key, val in labels.items():
-                    if (key[1] == 2*N+1 or key[1] == 2*N):
+                    if (int(np.round(key[1])) == 2*N+1 or int(np.round(key[1])) == 2*N):
                         EndProb[step] += weights[val]
             if M > N:
                 for key, val in labels.items():
-                    if (key[0] == M):
+                    if (int(np.round(key[0])) == M):
                         EndProb[step] += weights[val]
         
         else:
@@ -201,11 +224,39 @@ def ArrivalProbability(N,M,gamma,steps,eta,ChiralShift):
 
     edge_colors = np.average(edge_colors,axis=1)
 
-    return G, pos, nodes, edge_colors, probs, EndProb, runningAvg
+    return probs, EndProb, runningAvg, edge_colors
 
 
+if __name__ == "__main__":
 
-def PlotTube():
+    # M and N are number of HEXAGONS (not lattice points) in x and y
+    # if M >> N calculates HorDist, if M << N calculates VertDist
+    # choose values of M and N so that graph is long and thin
+
+    # add loss site at end of the tube and record probability that leaves the system
+
+    N = 2 # y
+    M = 20 # x - horizontal cylinder (M > N) only works if this is even
+    gamma = 1.0
+    steps = 200
+    eta = 1.0 # loss rate
+    ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
+
+    MyGraph = HexTube(M,N,ChiralShift)
+
+    G = MyGraph[0]
+    Adj = MyGraph[1]
+    pos = MyGraph[2]
+
+    myValues = ArrivalProbability(G,M,N,Adj,pos,steps,eta)
+
+    nodes = G.number_of_nodes()
+    probs = myValues[0]
+    EndProb = myValues[1]
+    runningAvg = myValues[2]
+    edge_colors = myValues[3]
+
+
     # draw
 
     xAx = np.arange(steps)
@@ -274,31 +325,3 @@ def PlotTube():
         ax3.tick_params(labelsize=12)
 
     plt.show()
-
-if __name__ == "__main__":
-
-    # M and N are number of HEXAGONS (not lattice points) in x and y
-    # if M >> N calculates HorDist, if M << N calculates VertDist
-    # choose values of M and N so that graph is long and thin
-
-    # add loss site at end of the tube and record probability that leaves the system
-
-    N = 2 # y
-    M = 20 # x - horizontal cylinder (M > N) only works if this is even
-    gamma = 1.0
-    steps = 200
-    eta = 1.0 # loss rate
-    ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
-
-
-    myValues = ArrivalProbability(N,M,gamma,steps,eta,ChiralShift)
-
-    G = myValues[0]
-    pos = myValues[1]
-    nodes = myValues[2]
-    edge_colors = myValues[3]
-    probs = myValues[4]
-    EndProb = myValues[5]
-    runningAvg = myValues[6]
-
-    PlotTube()
