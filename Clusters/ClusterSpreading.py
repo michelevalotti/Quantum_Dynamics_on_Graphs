@@ -7,12 +7,9 @@ import scipy.linalg
 from ClusterArrProb import ClusterGraph, ConnectRand, ConnectNext
 
 
-def StandardDeviation(G, ClusterLen, pos, steps, gamma=1.0):
+def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0):
 
     TotNodes = G.number_of_nodes()
-
-    Adj = nx.adjacency_matrix(G)
-    Adj = Adj.todense()
 
     Deg = np.zeros((TotNodes,TotNodes))
     for i in range(TotNodes):
@@ -34,7 +31,6 @@ def StandardDeviation(G, ClusterLen, pos, steps, gamma=1.0):
 
         for key, val in pos.items():
             xPosns[key] = val[0]
-            # if (val[0] >= 40 and val[0] <= 50): # particle starts in the middle
             if (val[0] >= (MiddleX) and val[0] <= (MiddleX+ClusterLen)): # particle starts in the middle
                 psi0[key] = 1 # superposition of all nodes in the middle
                 AvgStart += float(val[0])
