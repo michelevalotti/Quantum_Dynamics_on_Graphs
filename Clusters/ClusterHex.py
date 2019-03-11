@@ -144,8 +144,9 @@ if __name__ == '__main__':
     ClusterX = 1
     ClusterY = 2
     NextConns = (ClusterY*2)+1
-    steps = 50
+    steps = 10
     stepsArrProb = steps*8
+    TotTrials = 1
 
     MyHexC = HexCluster(Clusters,ClusterX,ClusterY)
 
@@ -163,13 +164,15 @@ if __name__ == '__main__':
 
     SubPlotList = [511,512,513,514,515]
 
-    ArrProblist = []
+    ArrProblist = np.zeros((3,stepsArrProb))
 
     for i in range(3):
-        MyArrP =  HexClusterArr(GList[i],ClusterY,stepsArrProb)
-        ArrP = MyArrP[0]
-        ArrProblist.append(ArrP)
-        probs = MyArrP[1]
+        for j in range(TotTrials):
+            print('trial ', j)
+            MyArrP =  HexClusterArr(GList[i],ClusterY,stepsArrProb)
+            ArrP = MyArrP[0]
+            ArrProblist[i] += ArrP
+            probs = MyArrP[1]
 
         ax1 = fig.add_subplot(SubPlotList[i])
         node_size = probs*(100000/(max(probs)*GList[i].number_of_nodes()))
@@ -177,20 +180,25 @@ if __name__ == '__main__':
         PltEdges = nx.draw_networkx_edges(GList[i],pos)
         col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
+    ArrProblist = ArrProblist/TotTrials
 
-    SDevList = []
+    SDevList = np.zeros((3,steps))
 
     for i in tqdm(range(3)):
-        MySDev = StandardDeviation(GList[i],1,pos,steps)
-        SDev = MySDev[0]
-        SDevList.append(SDev)
+        for j in range(TotTrials):
+            print('trial ', j)
+            MySDev = StandardDeviation(GList[i],nx.adjacency_matrix(GList[i]).todense(),1,pos,steps)
+            SDev = MySDev[0]
+            SDevList[i] += SDev
+    
+    SDevList = SDevList/TotTrials
 
 
     ax2 = fig.add_subplot(514)
     for d in range(3):
         plt.plot(np.arange(steps),SDevList[d], label=GListLabel[d])
     plt.xlabel('steps')
-    plt.ylabel('Arrival Probability')
+    plt.ylabel('$\sigma_x$ from starting posn')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
