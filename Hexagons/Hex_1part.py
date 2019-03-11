@@ -5,6 +5,7 @@ import numpy as np
 import scipy.linalg
 from tqdm import tqdm
 
+
 def HexTube(HexX,HexY,ChiralShift):
 
     G = nx.hexagonal_lattice_graph(HexY,HexX)
@@ -80,7 +81,7 @@ def HexTube(HexX,HexY,ChiralShift):
     return G,Adj,pos
 
 
-def ArrivalProbability(G,M,N,Adj,pos,steps,eta,gamma=1.0):
+def ArrivalProbability(G,M,N,Adj,pos,steps,eta=1.0,gamma=1.0):
 
     edges = G.number_of_edges()
     nodes = G.number_of_nodes()
@@ -125,6 +126,7 @@ def ArrivalProbability(G,M,N,Adj,pos,steps,eta,gamma=1.0):
     #     Pot[-val-1,-val-1] = np.round(key[0])/10 # Pot[val,val] if values increase left to right, Pot[-val-1,-val-1] if they decrease left to right
     # H += Pot
     # H[110,110] -= 10
+    # ########
 
 
     # sites on the top or right (according to geometry of graph) have high losses
@@ -227,6 +229,70 @@ def ArrivalProbability(G,M,N,Adj,pos,steps,eta,gamma=1.0):
     return probs, EndProb, runningAvg, edge_colors
 
 
+def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
+
+    TotNodes = G.number_of_nodes()
+
+    Deg = np.zeros((TotNodes,TotNodes))
+    for i in range(TotNodes):
+        Deg[i,i] = np.sum(Adj[i,:])
+
+    H = np.zeros((TotNodes,TotNodes),dtype=complex)
+    H += gamma*(Deg-Adj)
+
+    StandDevArr = np.zeros(steps)
+
+    for step in tqdm(range(steps)):
+        U = scipy.linalg.expm(-1j*H*step)
+        psi0 = np.zeros(TotNodes, dtype=complex)
+        xPosns = np.zeros(TotNodes)
+        yPosns = np.zeros(TotNodes)
+        AvgStart = 0.0
+
+        MiddleX = (int((abs((pos[0])[0] - (pos[M])[0])/2)))
+        MiddleY = (int((abs((pos[0])[0] - (pos[N*2])[0])/2)))
+
+        if M > N:
+            for key, val in pos.items():
+                xPosns[key] = val[0]
+                if (val[0] >= (MiddleX) and val[0] <= (MiddleX+1)): # particle starts in the middle
+                    psi0[key] = 1 # superposition of all nodes in the middle
+                    AvgStart += float(val[0])
+            AvgStart = AvgStart/abs(sum(psi0))
+            xPosns -= AvgStart
+            psi0 = psi0/(np.sqrt(sum(psi0)))
+            psiN = np.dot(U,psi0)
+
+            probs = abs(psiN**2)
+
+            AvgX = sum(xPosns*probs)
+            AvgXsq = sum((xPosns**2)*probs)
+
+            StandDev = np.sqrt((AvgXsq - (AvgX)**2))
+            StandDevArr[step] = StandDev
+        
+        if M < N:
+            for key, val in pos.items():
+                yPosns[key] = val[1]
+                if (val[1] >= (MiddleY) and val[1] <= (MiddleY+1)): # particle starts in the middle
+                    psi0[key] = 1 # superposition of all nodes in the middle
+                    AvgStart += float(val[1])
+            AvgStart = AvgStart/abs(sum(psi0))
+            yPosns -= AvgStart
+            psi0 = psi0/(np.sqrt(sum(psi0)))
+            psiN = np.dot(U,psi0)
+
+            probs = abs(psiN**2)
+
+            AvgX = sum(yPosns*probs)
+            AvgXsq = sum((yPosns**2)*probs)
+
+            StandDev = np.sqrt((AvgXsq - (AvgX)**2))
+            StandDevArr[step] = StandDev
+
+    return StandDevArr, probs
+
+
 if __name__ == "__main__":
 
     # M and N are number of HEXAGONS (not lattice points) in x and y
@@ -235,10 +301,11 @@ if __name__ == "__main__":
 
     # add loss site at end of the tube and record probability that leaves the system
 
-    N = 2 # y
-    M = 20 # x - horizontal cylinder (M > N) only works if this is even
+    N = 20 # y
+    M = 2 # x - horizontal cylinder (M > N) only works if this is even
     gamma = 1.0
     steps = 200
+    stepsSDev = int(steps) # reaches maximum deviation quicker than ArrivalProb, but is also interesting to see long term behaviour
     eta = 1.0 # loss rate
     ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
 
@@ -256,6 +323,9 @@ if __name__ == "__main__":
     runningAvg = myValues[2]
     edge_colors = myValues[3]
 
+    mySpreading = StandardDeviationHex(G,M,N,Adj,pos,stepsSDev)
+    SDev = mySpreading[0]
+
 
     # draw
 
@@ -263,7 +333,7 @@ if __name__ == "__main__":
 
     if M < N: # vertical graph
         fig = plt.figure(figsize=(7,8), dpi=200)
-        gs1 = gridspec.GridSpec(10, 3)
+        gs1 = gridspec.GridSpec(11, 3)
         gs1.update(hspace=0.0, right=0.85)
 
         ax1 = fig.add_subplot(gs1[:,2])
@@ -277,20 +347,27 @@ if __name__ == "__main__":
         # plt.colorbar(PltNodes, label='Probability', shrink=0.9, fontsize=10)
         ax1.tick_params(labelsize=10)
 
-        gs2=gridspec.GridSpec(10,3)
+        gs2=gridspec.GridSpec(11,3)
         gs2.update(left=0.1, right=0.85, hspace=0.0)
 
-        ax2 = fig.add_subplot(gs2[2:5,:2])
+        ax2 = fig.add_subplot(gs2[1:4,:2])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('Arrival Prob', fontsize=12)
         plt.plot(xAx, EndProb)
         ax2.tick_params(labelsize=12)
 
-        ax3 = fig.add_subplot(gs2[5:8,:2])
+        ax3 = fig.add_subplot(gs2[4:7,:2])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('Avg Position', fontsize=12)
         plt.plot(xAx, runningAvg)
         ax3.tick_params(labelsize=12)
+
+        ax3 = fig.add_subplot(gs2[7:10,:2])
+        plt.xlabel('steps', fontsize=12)
+        plt.ylabel('$\sigma_x$', fontsize=12)
+        plt.plot(np.arange(stepsSDev), SDev)
+        ax3.tick_params(labelsize=12)
+
 
     if M > N: # horizontal graph
         fig = plt.figure(figsize=(7,8), dpi=200)
@@ -312,16 +389,22 @@ if __name__ == "__main__":
         gs2=gridspec.GridSpec(10,3)
         gs2.update(left=0.125, right=0.745, hspace=0.0)
 
-        ax2 = fig.add_subplot(gs2[4:7,:])
+        ax2 = fig.add_subplot(gs2[4:6,:])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('Arrival Probability', fontsize=12)
         plt.plot(xAx, EndProb)
         ax2.tick_params(labelsize=12)
 
-        ax3 = fig.add_subplot(gs2[7:,:])
+        ax3 = fig.add_subplot(gs2[6:8,:])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('Avg Position', fontsize=12)
         plt.plot(xAx, runningAvg)
+        ax3.tick_params(labelsize=12)
+
+        ax3 = fig.add_subplot(gs2[8:10,:])
+        plt.xlabel('steps', fontsize=12)
+        plt.ylabel('$\sigma_x$', fontsize=12)
+        plt.plot(np.arange(stepsSDev), SDev)
         ax3.tick_params(labelsize=12)
 
     plt.show()
