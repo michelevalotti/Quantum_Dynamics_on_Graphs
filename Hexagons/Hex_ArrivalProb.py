@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 import numpy as np
-from Hex_1part import ArrivalProbability
+from Hex_1part import HexTube, ArrivalProbability
 
 
 HopRate = 1.0
-Steps = 200
+Steps = 200 # if not high enough StepsToArr will return 0 (particle never reaches end of tube)
 LossRate = 1.0 # loss rate -- keep high
 trials = 5
 
@@ -29,8 +29,12 @@ for i in range(2): # horizontal first, vertical second, chiral third
             Y = 4
             print('chiral length')
             for i in range(trials):
-                myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-                EndProb = myValues[5]
+                myTube = HexTube(X,Y,ChiralShift)
+                G = myTube[0]
+                Adj = myTube[1]
+                pos = myTube[2]
+                myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+                EndProb = myValues[1]
                 for j in range(len(EndProb)):
                     if abs(EndProb[j] - 0.5) < 0.01:
                         # print(EndProb[j])
@@ -44,8 +48,12 @@ for i in range(2): # horizontal first, vertical second, chiral third
         else:
             print('horizontal length')
             for i in range(trials):
-                myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-                EndProb = myValues[5]
+                myTube = HexTube(X,Y,ChiralShift)
+                G = myTube[0]
+                Adj = myTube[1]
+                pos = myTube[2]
+                myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+                EndProb = myValues[1]
                 for j in range(len(EndProb)):
                     if abs(EndProb[j] - 0.5) < 0.01:
                         # print(EndProb[j])
@@ -58,8 +66,12 @@ for i in range(2): # horizontal first, vertical second, chiral third
         print('vertical length')
         ChiralShift = 0
         for i in range(trials):
-            myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-            EndProb = myValues[5]
+            myTube = HexTube(X,Y,ChiralShift)
+            G = myTube[0]
+            Adj = myTube[1]
+            pos = myTube[2]
+            myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+            EndProb = myValues[1]
             for j in range(len(EndProb)):
                 if abs(EndProb[j] - 0.5) < 0.01:
                     # print(EndProb[j])
@@ -92,8 +104,12 @@ for i in range(2): # horizontal first and vertical second
             Y = 2
             print('chiral width')
             for i in range(trials):
-                myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-                EndProb = myValues[5]
+                myTube = HexTube(X,Y,ChiralShift)
+                G = myTube[0]
+                Adj = myTube[1]
+                pos = myTube[2]
+                myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+                EndProb = myValues[1]
                 for j in range(len(EndProb)):
                     if abs(EndProb[j] - 0.5) < 0.01:
                         # print(EndProb[j])
@@ -107,8 +123,12 @@ for i in range(2): # horizontal first and vertical second
         else:
             print('horizontal width')
             for i in range(trials):
-                myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-                EndProb = myValues[5]
+                myTube = HexTube(X,Y,ChiralShift)
+                G = myTube[0]
+                Adj = myTube[1]
+                pos = myTube[2]
+                myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+                EndProb = myValues[1]
                 for j in range(len(EndProb)):
                     if abs(EndProb[j] - 0.5) < 0.01:
                         # print(EndProb[j])
@@ -121,8 +141,12 @@ for i in range(2): # horizontal first and vertical second
     if X < Y:
         print('vertical width')
         for i in range(trials):
-            myValues = ArrivalProbability(Y,X,HopRate,Steps,LossRate,ChiralShift)
-            EndProb = myValues[5]
+            myTube = HexTube(X,Y,ChiralShift)
+            G = myTube[0]
+            Adj = myTube[1]
+            pos = myTube[2]
+            myValues = ArrivalProbability(G,X,Y,Adj,pos,Steps)
+            EndProb = myValues[1]
             for j in range(len(EndProb)):
                 if abs(EndProb[j] - 0.5) < 0.01:
                     # print(EndProb[j])
