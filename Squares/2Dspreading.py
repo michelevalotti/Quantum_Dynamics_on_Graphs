@@ -45,7 +45,7 @@ def ArrProbSq(H,X,Y,stepsTot,eta=1.0):
         if v >= (Y*(X-1)): # add loss in all sites on the right (last column)
             H[v,v] -= 1j*(eta/2)
 
-    for step in tqdm(range(stepsTot)):
+    for step in (range(stepsTot)):
         U = scipy.linalg.expm(-1j*H*step)
         psi0 = np.zeros((X*Y),dtype=complex)
         psi0[:Y] = 1 # initialise in a superposition of all nodes on the left
@@ -66,7 +66,7 @@ def SDevSq(H,X,Y,stepsTot):
     for i in range(X*Y):
         xPosns[i] = int(i/Y)
 
-    for step in tqdm(range(stepsTot)):
+    for step in (range(stepsTot)):
         U = scipy.linalg.expm(-1j*H*step)
         psi0 = np.zeros(X*Y)
         psi0[((int(X/2))*Y):(((int(X/2)+1)*Y))] = 1 # initialise in a superposition of states in the middle
@@ -78,7 +78,7 @@ def SDevSq(H,X,Y,stepsTot):
         AvgX = sum(xPosns*probs)
         AvgXsq = sum((xPosns**2)*probs)
 
-        StandDev = np.sqrt((AvgXsq - (AvgX)**2))
+        StandDev = np.sqrt(np.around((AvgXsq - (AvgX)**2),decimals=10)) # if not rounded the first value in the sqrt is negative (order e-16)
         SDev[step] = StandDev
 
     return SDev, probs
@@ -86,29 +86,36 @@ def SDevSq(H,X,Y,stepsTot):
 
 
 
-X = 21 # x size of side of lattice, keep higher than Y (horizontal tube)
-Y = 5 # y size of lattice
+X = 20 # x size of side of lattice, keep higher than Y (horizontal tube)
+Y = 2 # y size of lattice
+Ylabel = Y
 gamma = 1.0 # hopping rate
 stepsTot = 100 # steps quantum particles takes on lattice
 stepsTotSD = int(stepsTot/4)
 eta = 1.0 # loss rate
+trialsTot = 6 # increase width of tube by one square per trial
 
-H = SquareTube(X,Y)
+SDevAll = []
+ArrProbAll = []
 
-mySDev = SDevSq(H,X,Y,stepsTotSD)
-SDev = mySDev[0]
-probsSD = mySDev[1]
-PlotProbsSD = np.zeros((Y,X))
-for i in range(X*Y):
-    PlotProbsSD[i%Y][int(i/Y)] = probsSD[i]
+for t in tqdm(range(trialsTot)):
+    H = SquareTube(X,Y)
+
+    SDev,probsSD = SDevSq(H,X,Y,stepsTotSD)
+    PlotProbsSD = np.zeros((Y,X))
+    for i in range(X*Y):
+        PlotProbsSD[i%Y][int(i/Y)] = probsSD[i]
 
 
-myArrProb = ArrProbSq(H,X,Y,stepsTot)
-ArrProb = myArrProb[0]
-probsAP = myArrProb[1]
-PlotProbsAP = np.zeros((Y,X))
-for i in range(X*Y):
-    PlotProbsAP[i%Y][int(i/Y)] = probsAP[i]
+    ArrProb, probsAP = ArrProbSq(H,X,Y,stepsTot)
+    PlotProbsAP = np.zeros((Y,X))
+    for i in range(X*Y):
+        PlotProbsAP[i%Y][int(i/Y)] = probsAP[i]
+
+    SDevAll.append(SDev)
+    ArrProbAll.append(ArrProb)
+
+    Y += 1
 
 
 # plot
@@ -126,13 +133,17 @@ gs2 = gridspec.GridSpec(3, 1)
 gs2.update(hspace=0.3)
 
 ax2 = fig.add_subplot(gs2[1,0])
-plt.plot(np.arange(stepsTot),ArrProb)
+for i in range(trialsTot):
+    plt.plot(np.arange(stepsTot),ArrProbAll[i],label=('width: '+str(Ylabel+i)))
 plt.ylabel('Arrival Probability')
 plt.xlabel('steps')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 ax3 = fig.add_subplot(gs2[2,0])
-plt.plot(np.arange(stepsTotSD),SDev)
+for j in range(trialsTot):
+    plt.plot(np.arange(stepsTotSD),SDevAll[j],label=('width: '+str(Ylabel+j)))
 plt.xlabel('steps')
 plt.ylabel('$\sigma_x$')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 plt.show()
