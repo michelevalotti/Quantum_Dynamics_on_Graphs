@@ -24,7 +24,6 @@ def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0):
         U = scipy.linalg.expm(-1j*H*step)
         psi0 = np.zeros(TotNodes, dtype=complex)
         xPosns = np.zeros(TotNodes)
-        AvgStart = 0.0
 
         MiddleX = (int((abs((pos[0])[0] - (pos[TotNodes-1])[0])/2)))
 
@@ -33,9 +32,6 @@ def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0):
             xPosns[key] = val[0]
             if (val[0] >= (MiddleX) and val[0] <= (MiddleX+ClusterLen)): # particle starts in the middle
                 psi0[key] = 1 # superposition of all nodes in the middle
-                AvgStart += float(val[0])
-        AvgStart = AvgStart/abs(sum(psi0))
-        xPosns -= AvgStart
         psi0 = psi0/(np.sqrt(sum(psi0)))
         psiN = np.dot(U,psi0)
 

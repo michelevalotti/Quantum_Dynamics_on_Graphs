@@ -247,7 +247,6 @@ def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
         psi0 = np.zeros(TotNodes, dtype=complex)
         xPosns = np.zeros(TotNodes)
         yPosns = np.zeros(TotNodes)
-        AvgStart = 0.0
 
         MiddleX = (int((abs((pos[0])[0] - (pos[M])[0])/2)))
         MiddleY = (int((abs((pos[0])[0] - (pos[N*2])[0])/2)))
@@ -257,9 +256,6 @@ def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
                 xPosns[key] = val[0]
                 if (val[0] >= (MiddleX) and val[0] <= (MiddleX+1)): # particle starts in the middle
                     psi0[key] = 1 # superposition of all nodes in the middle
-                    AvgStart += float(val[0])
-            AvgStart = AvgStart/abs(sum(psi0))
-            xPosns -= AvgStart
             psi0 = psi0/(np.sqrt(sum(psi0)))
             psiN = np.dot(U,psi0)
 
@@ -276,9 +272,6 @@ def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
                 yPosns[key] = val[1]
                 if (val[1] >= (MiddleY) and val[1] <= (MiddleY+1)): # particle starts in the middle
                     psi0[key] = 1 # superposition of all nodes in the middle
-                    AvgStart += float(val[1])
-            AvgStart = AvgStart/abs(sum(psi0))
-            yPosns -= AvgStart
             psi0 = psi0/(np.sqrt(sum(psi0)))
             psiN = np.dot(U,psi0)
 
@@ -364,7 +357,7 @@ if __name__ == "__main__":
 
         ax3 = fig.add_subplot(gs2[7:10,:2])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('$\sigma_x$', fontsize=12)
+        plt.ylabel('$\sigma_y$', fontsize=12)
         plt.plot(np.arange(stepsSDev), SDev)
         ax3.tick_params(labelsize=12)
 
