@@ -204,9 +204,6 @@ def ArrivalProbability(G,M,N,Adj,pos,steps,eta=1.0,gamma=1.0):
         meas[i] = 1
         probs[i] = abs(np.dot(psiN.T,meas))**2
 
-    # check normalizations
-    print(sum(probs))
-
 
     # edge colors
 
@@ -226,7 +223,7 @@ def ArrivalProbability(G,M,N,Adj,pos,steps,eta=1.0,gamma=1.0):
 
     edge_colors = np.average(edge_colors,axis=1)
 
-    return probs, EndProb, runningAvg, edge_colors
+    return probs, EndProb, runningAvg, edge_colors, H
 
 
 def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
@@ -294,10 +291,10 @@ if __name__ == "__main__":
 
     # add loss site at end of the tube and record probability that leaves the system
 
-    N = 20 # y
-    M = 2 # x - horizontal cylinder (M > N) only works if this is even
+    N = 2 # y
+    M = 20 # x - horizontal cylinder (M > N) only works if this is even
     gamma = 1.0
-    steps = 200
+    steps = 10
     stepsSDev = int(steps) # reaches maximum deviation quicker than ArrivalProb, but is also interesting to see long term behaviour
     eta = 1.0 # loss rate
     ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
@@ -315,9 +312,15 @@ if __name__ == "__main__":
     EndProb = myValues[1]
     runningAvg = myValues[2]
     edge_colors = myValues[3]
+    H = myValues[4]
 
     mySpreading = StandardDeviationHex(G,M,N,Adj,pos,stepsSDev)
     SDev = mySpreading[0]
+
+    EigenVals, EigenVecs = np.linalg.eig(H)
+    for i in range(len(EigenVals)):
+        if abs(EigenVals[i]**2) == (EigenVals[i]**2):
+            print(EigenVals[i])
 
 
     # draw
@@ -332,12 +335,10 @@ if __name__ == "__main__":
         ax1 = fig.add_subplot(gs1[:,2])
 
         node_size = probs*(100000/(max(probs)*nodes))
-        # nx.draw(G, pos=pos, labels=labels, edge_color=edge_colors)
         PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
         PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
         col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
         col1.ax.tick_params(labelsize=10)
-        # plt.colorbar(PltNodes, label='Probability', shrink=0.9, fontsize=10)
         ax1.tick_params(labelsize=10)
 
         gs2=gridspec.GridSpec(11,3)
@@ -345,21 +346,21 @@ if __name__ == "__main__":
 
         ax2 = fig.add_subplot(gs2[1:4,:2])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Arrival Prob', fontsize=12)
-        plt.plot(xAx, EndProb)
+        plt.ylabel('Avg Position', fontsize=12)
+        plt.plot(xAx, runningAvg)
         ax2.tick_params(labelsize=12)
 
         ax3 = fig.add_subplot(gs2[4:7,:2])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Avg Position', fontsize=12)
-        plt.plot(xAx, runningAvg)
+        plt.ylabel('$P_{arrival}$', fontsize=12)
+        plt.plot(xAx, EndProb)
         ax3.tick_params(labelsize=12)
 
-        ax3 = fig.add_subplot(gs2[7:10,:2])
+        ax4 = fig.add_subplot(gs2[7:10,:2])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('$\sigma_y$', fontsize=12)
         plt.plot(np.arange(stepsSDev), SDev)
-        ax3.tick_params(labelsize=12)
+        ax4.tick_params(labelsize=12)
 
 
     if M > N: # horizontal graph
@@ -370,12 +371,10 @@ if __name__ == "__main__":
         ax1 = fig.add_subplot(gs1[0:4,:])
 
         node_size = probs*(100000/(max(probs)*nodes))
-        # nx.draw(G, pos=pos, labels=labels, edge_color=edge_colors)
         PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
         PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
         col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
         col1.ax.tick_params(labelsize=10)
-        # plt.colorbar(PltNodes, label='Probability', shrink=0.9)
         ax1.tick_params(labelsize=10)
 
 
@@ -384,20 +383,20 @@ if __name__ == "__main__":
 
         ax2 = fig.add_subplot(gs2[4:6,:])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Arrival Probability', fontsize=12)
-        plt.plot(xAx, EndProb)
+        plt.ylabel('Avg Position', fontsize=12)
+        plt.plot(xAx, runningAvg)
         ax2.tick_params(labelsize=12)
 
         ax3 = fig.add_subplot(gs2[6:8,:])
         plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Avg Position', fontsize=12)
-        plt.plot(xAx, runningAvg)
+        plt.ylabel('$P_{arrival}$', fontsize=12)
+        plt.plot(xAx, EndProb)
         ax3.tick_params(labelsize=12)
 
-        ax3 = fig.add_subplot(gs2[8:10,:])
+        ax4 = fig.add_subplot(gs2[8:10,:])
         plt.xlabel('steps', fontsize=12)
         plt.ylabel('$\sigma_x$', fontsize=12)
         plt.plot(np.arange(stepsSDev), SDev)
-        ax3.tick_params(labelsize=12)
+        ax4.tick_params(labelsize=12)
 
     plt.show()
