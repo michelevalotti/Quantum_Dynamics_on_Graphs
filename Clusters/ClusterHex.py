@@ -1,6 +1,7 @@
 import networkx as nx
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.gridspec as gridspec
 import random
 from tqdm import tqdm
 import scipy.linalg
@@ -15,7 +16,7 @@ standard dev'''
 
 
 
-def HexCluster(Clusters,ClusterX,ClusterY):
+def HexCluster(Clusters,ClusterX,ClusterY,orientation):
     '''generate random graph of unconnected clusters, each with same fixed number of nodes and edges'''
 
     ClusterList = []
@@ -25,19 +26,25 @@ def HexCluster(Clusters,ClusterX,ClusterY):
         G = nx.hexagonal_lattice_graph(ClusterY,ClusterX)
         coords = []
 
-        for i,j in G.nodes():
-            coords.append((i+((ClusterX+1)*cluster),j)) # clusters are 1 hexagon apart
+        if orientation == 'horizontal':
+            Cdist = 5 # distance between clusters, for drawing
+            for i,j in G.nodes():
+                coords.append((i+((ClusterX+1)*cluster),j)) # clusters are 1 hexagon apart
+        if orientation == 'vertical':
+            Cdist = 4
+            for i,j in G.nodes():
+                coords.append((i,j+((ClusterX+2)*cluster)))
         
         
         # shift positions to make graph look like a hexagonal lattice
         for coord in range(len(coords)):
-            if ((coords[coord][0]%2 == 0) and (coords[coord][1]%2 != 0)):
+            if (((coords[coord][0]-(Cdist*cluster))%2 == 0) and (coords[coord][1]%2 != 0)):
                 coords[coord] = ((float(coords[coord][0]) - 0.15), coords[coord][1])
-            elif ((coords[coord][0]%2 != 0) and (coords[coord][1]%2 != 0)):
+            elif (((coords[coord][0]-(Cdist*cluster))%2 != 0) and (coords[coord][1]%2 != 0)):
                 coords[coord] = ((float(coords[coord][0]) + 0.15), coords[coord][1])
-            elif ((coords[coord][0]%2 == 0) and (coords[coord][1]%2 == 0)):
+            elif (((coords[coord][0]-(Cdist*cluster))%2 == 0) and (coords[coord][1]%2 == 0)):
                 coords[coord] = ((float(coords[coord][0]) + 0.15), coords[coord][1])
-            elif ((coords[coord][0]%2 != 0) and (coords[coord][1]%2 == 0)):
+            elif (((coords[coord][0]-(Cdist*cluster))%2 != 0) and (coords[coord][1]%2 == 0)):
                 coords[coord] = ((float(coords[coord][0]) - 0.15), coords[coord][1])
 
 
@@ -80,23 +87,38 @@ def ConnectAllNext(G, NextConns, Clusters):
 
     return G
 
-def ConnectHexNext(G, HexY, NextConns, Clusters):
+def ConnectHexNext(G, HexX, HexY, NextConns, Clusters, orientation): # change this to take pos instead of HexX and HexY (maybe can only do it keeping HexX and HexY)
 
     ClusterNodes = G.number_of_nodes()/Clusters
 
-    for C in range(Clusters-1):
-        for CNext in range(NextConns):
-            NextNode1 = np.random.randint( (C*ClusterNodes)+(ClusterNodes-(2*HexY+1)), (C+1)*ClusterNodes)
-            NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
-            while(int(NextNode1/ClusterNodes) == int(NextNode2/ClusterNodes)):
+    if orientation == 'horizantal':
+        for C in range(Clusters-1):
+            for CNext in range(NextConns):
+                NextNode1 = np.random.randint( (C*ClusterNodes)+(ClusterNodes-(2*HexY+1)), (C+1)*ClusterNodes)
                 NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
+                while(int(NextNode1/ClusterNodes) == int(NextNode2/ClusterNodes)):
+                    NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
 
-            G.add_edge(NextNode1,NextNode2)
+                G.add_edge(NextNode1,NextNode2)
+
+    if orientation == 'vertical':
+        for C in range(Clusters-1):
+            TopNodes = []
+            BottomNodes = []
+            for k,v in pos.items():
+                if v[1] == (C*4)+(2*HexY+1) or v[1] == (C*4)+(2*HexY):
+                    TopNodes.append(k)
+                if v[1] == ((C+1)*4+1) or v[1] == (C+1)*4:
+                    BottomNodes.append(k)
+            for CNext in range(NextConns):
+                NextNode1 = random.choice(TopNodes)
+                NextNode2 = random.choice(BottomNodes)
+                G.add_edge(NextNode1,NextNode2)
 
     return G
 
 
-def HexClusterArr(G,ClusterY,steps,gamma=1.0,eta=1.0):
+def HexClusterArr(G,ClusterY,pos,steps,orientation,gamma=1.0,eta=1.0):
 
     TotNodes = G.number_of_nodes()
 
@@ -110,9 +132,20 @@ def HexClusterArr(G,ClusterY,steps,gamma=1.0,eta=1.0):
     H = np.zeros((TotNodes,TotNodes),dtype=complex)
     H += gamma*(Deg-Adj)
 
-    for l in range(TotNodes):
-        if (l >= (TotNodes-(ClusterY*2 - 1)) and l <= TotNodes):
-            H[l,l] -= 1j*(eta/2)
+    if orientation == 'horizontal':
+        for l in range(TotNodes):
+            if (l >= (TotNodes-(ClusterY*2 + 1)) and l <= TotNodes):
+                H[l,l] -= 1j*(eta/2)
+
+    if orientation == 'vertical':
+        for k,v in pos.items():
+            MaxY = v[1]
+            if v[1] > MaxY:
+                v[1] = MaxY
+        for key,val in pos.items():
+            if val[1] == MaxY or val[1] == (MaxY-1):
+                H[key,key] -= 1j*(eta/2)
+
 
     EndProb = np.zeros(steps)
 
@@ -139,16 +172,19 @@ if __name__ == '__main__':
 
     fig = plt.figure()
 
-
-    Clusters = 20
-    ClusterX = 1
-    ClusterY = 2
-    NextConns = (ClusterY*2)+1
-    steps = 10
+    orientation = 'vertical' # 'vertical' or 'horizontal'
+    Clusters = 20 # keep higher than 1
+    ClusterX = 2
+    ClusterY = 1
+    if orientation == 'horizontal':
+        NextConns = (ClusterY*2)+1
+    if orientation == 'vertical':
+        NextConns = (ClusterX*2)+2
+    steps = 50
     stepsArrProb = steps*8
-    TotTrials = 1
+    TotTrials = 10
 
-    MyHexC = HexCluster(Clusters,ClusterX,ClusterY)
+    MyHexC = HexCluster(Clusters,ClusterX,ClusterY,orientation)
 
     G = MyHexC[0]
     pos = MyHexC[1]
@@ -156,12 +192,13 @@ if __name__ == '__main__':
 
     G_Rand = ConnectRand(G.copy(),NextConns*Clusters, Clusters)
     G_AllNext = ConnectAllNext(G.copy(), NextConns, Clusters)
-    G_HexNext = ConnectHexNext(G.copy(), ClusterY, NextConns, Clusters)
+    G_HexNext = ConnectHexNext(G.copy(), ClusterX, ClusterY, NextConns, Clusters, orientation)
 
     GList = [G_Rand,G_AllNext,G_HexNext]
     GListLabel = ['Random Connections', 'Next-Cluster Connections', 'Cluster-Edge Connections']
 
-
+    # use gs for plotting
+    gs1 = gridspec.GridSpec(5, 3)
     SubPlotList = [511,512,513,514,515]
 
     ArrProblist = np.zeros((3,stepsArrProb))
@@ -169,12 +206,16 @@ if __name__ == '__main__':
     for i in range(3):
         for j in range(TotTrials):
             print('trial ', j)
-            MyArrP =  HexClusterArr(GList[i],ClusterY,stepsArrProb)
+            MyArrP =  HexClusterArr(GList[i],ClusterY,pos,stepsArrProb,orientation)
             ArrP = MyArrP[0]
             ArrProblist[i] += ArrP
             probs = MyArrP[1]
 
-        ax1 = fig.add_subplot(SubPlotList[i])
+        # ax1 = fig.add_subplot(SubPlotList[i])
+        if orientation == 'horizontal':
+            ax1 = fig.add_subplot(gs1[i,:])
+        if orientation == 'vertical':
+            ax1 = fig.add_subplot(gs1[:3,i])
         node_size = probs*(100000/(max(probs)*GList[i].number_of_nodes()))
         PltNodes = nx.draw_networkx_nodes(GList[i],pos, node_color=probs, node_size=node_size)
         PltEdges = nx.draw_networkx_edges(GList[i],pos)
@@ -187,14 +228,20 @@ if __name__ == '__main__':
     for i in tqdm(range(3)):
         for j in range(TotTrials):
             print('trial ', j)
-            MySDev = StandardDeviation(GList[i],nx.adjacency_matrix(GList[i]).todense(),1,pos,steps)
+            if orientation == 'horizontal':
+                ClusterLen = ClusterX
+            if orientation == 'vertical':
+                ClusterLen = ClusterY
+            MySDev = StandardDeviation(GList[i],nx.adjacency_matrix(GList[i]).todense(),ClusterLen,pos,steps,orientation=orientation)
             SDev = MySDev[0]
             SDevList[i] += SDev
     
     SDevList = SDevList/TotTrials
 
 
-    ax2 = fig.add_subplot(514)
+    # ax2 = fig.add_subplot(514)
+    ax2 = fig.add_subplot(gs1[3,:])
+
     for d in range(3):
         plt.plot(np.arange(steps),SDevList[d], label=GListLabel[d])
     plt.xlabel('steps')
@@ -202,7 +249,9 @@ if __name__ == '__main__':
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
-    ax3 = fig.add_subplot(515)
+    # ax3 = fig.add_subplot(515)
+    ax3 = fig.add_subplot(gs1[4,:])
+
     for a in range(3):
         plt.plot(np.arange(stepsArrProb),ArrProblist[a], label=GListLabel[a])
     plt.xlabel('steps')
