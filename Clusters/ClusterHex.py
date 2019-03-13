@@ -27,13 +27,13 @@ def HexCluster(Clusters,ClusterX,ClusterY,orientation):
         coords = []
 
         if orientation == 'horizontal':
-            Cdist = 5 # distance between clusters, for drawing
+            Cdist = ClusterX + 1 # distance between clusters, for drawing
             for i,j in G.nodes():
                 coords.append((i+((ClusterX+1)*cluster),j)) # clusters are 1 hexagon apart
         if orientation == 'vertical':
-            Cdist = 4
+            Cdist = ClusterY*2+2
             for i,j in G.nodes():
-                coords.append((i,j+((ClusterX+2)*cluster)))
+                coords.append((i,j+((ClusterY*2+2)*cluster)))
         
         
         # shift positions to make graph look like a hexagonal lattice
@@ -87,18 +87,15 @@ def ConnectAllNext(G, NextConns, Clusters):
 
     return G
 
-def ConnectHexNext(G, HexX, HexY, NextConns, Clusters, orientation): # change this to take pos instead of HexX and HexY (maybe can only do it keeping HexX and HexY)
+def ConnectHexNext(G, HexY, NextConns, Clusters, orientation):
 
     ClusterNodes = G.number_of_nodes()/Clusters
 
-    if orientation == 'horizantal':
+    if orientation == 'horizontal':
         for C in range(Clusters-1):
             for CNext in range(NextConns):
                 NextNode1 = np.random.randint( (C*ClusterNodes)+(ClusterNodes-(2*HexY+1)), (C+1)*ClusterNodes)
                 NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
-                while(int(NextNode1/ClusterNodes) == int(NextNode2/ClusterNodes)):
-                    NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
-
                 G.add_edge(NextNode1,NextNode2)
 
     if orientation == 'vertical':
@@ -106,9 +103,9 @@ def ConnectHexNext(G, HexX, HexY, NextConns, Clusters, orientation): # change th
             TopNodes = []
             BottomNodes = []
             for k,v in pos.items():
-                if v[1] == (C*4)+(2*HexY+1) or v[1] == (C*4)+(2*HexY):
+                if v[1] == (C*(2*HexY+2))+(2*HexY+1) or v[1] == (C*(2*HexY+2))+(2*HexY):
                     TopNodes.append(k)
-                if v[1] == ((C+1)*4+1) or v[1] == (C+1)*4:
+                if v[1] == ((C+1)*(2*HexY+2)+1) or v[1] == (C+1)*(2*HexY+2):
                     BottomNodes.append(k)
             for CNext in range(NextConns):
                 NextNode1 = random.choice(TopNodes)
@@ -172,27 +169,27 @@ if __name__ == '__main__':
 
     fig = plt.figure()
 
-    orientation = 'vertical' # 'vertical' or 'horizontal'
-    Clusters = 20 # keep higher than 1
+    orientation = 'horizontal' # 'vertical' or 'horizontal'
+    Clusters = 10 # keep higher than 1
     ClusterX = 2
-    ClusterY = 1
+    ClusterY = 2
     if orientation == 'horizontal':
         NextConns = (ClusterY*2)+1
     if orientation == 'vertical':
         NextConns = (ClusterX*2)+2
-    steps = 50
-    stepsArrProb = steps*8
-    TotTrials = 10
+    steps = 10
+    stepsArrProb = steps*4
+    TotTrials = 1
 
     MyHexC = HexCluster(Clusters,ClusterX,ClusterY,orientation)
 
     G = MyHexC[0]
     pos = MyHexC[1]
-
+    
 
     G_Rand = ConnectRand(G.copy(),NextConns*Clusters, Clusters)
     G_AllNext = ConnectAllNext(G.copy(), NextConns, Clusters)
-    G_HexNext = ConnectHexNext(G.copy(), ClusterX, ClusterY, NextConns, Clusters, orientation)
+    G_HexNext = ConnectHexNext(G.copy(), ClusterY, NextConns, Clusters, orientation)
 
     GList = [G_Rand,G_AllNext,G_HexNext]
     GListLabel = ['Random Connections', 'Next-Cluster Connections', 'Cluster-Edge Connections']
