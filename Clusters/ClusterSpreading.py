@@ -7,7 +7,7 @@ import scipy.linalg
 from ClusterArrProb import ClusterGraph, ConnectRand, ConnectNext
 
 
-def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0):
+def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0, orientation='horizontal'):
 
     TotNodes = G.number_of_nodes()
 
@@ -24,24 +24,42 @@ def StandardDeviation(G, Adj, ClusterLen, pos, steps, gamma=1.0):
         U = scipy.linalg.expm(-1j*H*step)
         psi0 = np.zeros(TotNodes, dtype=complex)
         xPosns = np.zeros(TotNodes)
+        yPosns = np.zeros(TotNodes)
 
         MiddleX = (int((abs((pos[0])[0] - (pos[TotNodes-1])[0])/2)))
+        MiddleY = (int((abs((pos[0])[1] - (pos[TotNodes-1])[1])/2)))
 
+        if orientation == 'horizontal':
+            for key, val in pos.items():
+                xPosns[key] = val[0]
+                if (val[0] >= (MiddleX) and val[0] <= (MiddleX+ClusterLen)): # particle starts in the middle
+                    psi0[key] = 1 # superposition of all nodes in the middle
+            psi0 = psi0/(np.sqrt(sum(psi0)))
+            psiN = np.dot(U,psi0)
 
-        for key, val in pos.items():
-            xPosns[key] = val[0]
-            if (val[0] >= (MiddleX) and val[0] <= (MiddleX+ClusterLen)): # particle starts in the middle
-                psi0[key] = 1 # superposition of all nodes in the middle
-        psi0 = psi0/(np.sqrt(sum(psi0)))
-        psiN = np.dot(U,psi0)
+            probs = abs(psiN**2)
 
-        probs = abs(psiN**2)
+            AvgX = sum(xPosns*probs)
+            AvgXsq = sum((xPosns**2)*probs)
 
-        AvgX = sum(xPosns*probs)
-        AvgXsq = sum((xPosns**2)*probs)
+            StandDev = np.sqrt((AvgXsq - (AvgX)**2))
+            StandDevArr[step] = StandDev
 
-        StandDev = np.sqrt((AvgXsq - (AvgX)**2))
-        StandDevArr[step] = StandDev
+        if orientation == 'vertical':
+            for key, val in pos.items():
+                yPosns[key] = val[1]
+                if (val[1] >= (MiddleY) and val[1] <= (MiddleY+ClusterLen)): # particle starts in the middle
+                    psi0[key] = 1 # superposition of all nodes in the middle
+            psi0 = psi0/(np.sqrt(sum(psi0)))
+            psiN = np.dot(U,psi0)
+
+            probs = abs(psiN**2)
+
+            AvgX = sum(yPosns*probs)
+            AvgXsq = sum((yPosns**2)*probs)
+
+            StandDev = np.sqrt((AvgXsq - (AvgX)**2))
+            StandDevArr[step] = StandDev
 
     return StandDevArr, probs
 
