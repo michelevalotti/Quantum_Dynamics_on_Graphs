@@ -246,7 +246,7 @@ def StandardDeviationHex(G, M, N, Adj, pos, steps, gamma=1.0):
         yPosns = np.zeros(TotNodes)
 
         MiddleX = (int((abs((pos[0])[0] - (pos[M])[0])/2)))
-        MiddleY = (int((abs((pos[0])[0] - (pos[N*2])[0])/2)))
+        MiddleY = (int((abs((pos[0])[1] - (pos[N*2])[1])/2)))
 
         if M > N:
             for key, val in pos.items():
@@ -291,8 +291,8 @@ if __name__ == "__main__":
 
     # add loss site at end of the tube and record probability that leaves the system
 
-    N = 2 # y
-    M = 20 # x - horizontal cylinder (M > N) only works if this is even
+    N = 20 # y
+    M = 2 # x - horizontal cylinder (M > N) only works if this is even
     gamma = 1.0
     steps = 10
     stepsSDev = int(steps) # reaches maximum deviation quicker than ArrivalProb, but is also interesting to see long term behaviour
