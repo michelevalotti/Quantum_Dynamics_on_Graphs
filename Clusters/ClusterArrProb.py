@@ -6,7 +6,7 @@ from tqdm import tqdm
 import scipy.linalg
 
 
-def ClusterGraph(Clusters,ClusterNodes,ClusterConnections):
+def ClusterGraph(Clusters,ClusterNodes,ClusterConnections,ClusterDist):
     '''generate random graph of unconnected clusters, each with same fixed number of nodes and edges'''
 
     TotNodes = Clusters*ClusterNodes
@@ -26,7 +26,7 @@ def ClusterGraph(Clusters,ClusterNodes,ClusterConnections):
             node2 = np.random.randint(ClusterNodes*cluster, ClusterNodes+cluster*ClusterNodes)
             G.add_edge(node1, node2)
 
-        X_G = np.random.uniform(float(cluster*20),float(cluster*20+10),ClusterNodes)
+        X_G = np.random.uniform(float(cluster*ClusterDist),float(cluster*ClusterDist+10),ClusterNodes)
         Y_G = np.random.uniform(0.0,15.0,ClusterNodes)
 
         for j in range(ClusterNodes):
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
             print(Clusters, ' clusters, ', 'total number of nodes: ', Clusters*ClusterNodes)
 
-            MyGraph = ClusterGraph(Clusters,ClusterNodes,ClusterConnections) # generate graph (no inter cluster connections)
+            MyGraph = ClusterGraph(Clusters,ClusterNodes,ClusterConnections,ClusterDist=10) # generate graph (no inter cluster connections)
             G = MyGraph[0]
             pos = MyGraph[1]
             TotNodes = MyGraph[2]
