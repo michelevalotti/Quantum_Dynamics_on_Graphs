@@ -84,66 +84,66 @@ def SDevSq(H,X,Y,stepsTot):
     return SDev, probs
 
 
+if __name__ == '__main__':
+
+    X = 20 # x size of side of lattice, keep higher than Y (horizontal tube)
+    Y = 2 # y size of lattice
+    Ylabel = Y
+    gamma = 1.0 # hopping rate
+    stepsTot = 100 # steps quantum particles takes on lattice
+    stepsTotSD = int(stepsTot/4)
+    eta = 1.0 # loss rate
+    trialsTot = 6 # increase width of tube by one square per trial
+
+    SDevAll = []
+    ArrProbAll = []
+
+    for t in tqdm(range(trialsTot)):
+        H = SquareTube(X,Y)
+
+        SDev,probsSD = SDevSq(H,X,Y,stepsTotSD)
+        PlotProbsSD = np.zeros((Y,X))
+        for i in range(X*Y):
+            PlotProbsSD[i%Y][int(i/Y)] = probsSD[i]
 
 
-X = 20 # x size of side of lattice, keep higher than Y (horizontal tube)
-Y = 2 # y size of lattice
-Ylabel = Y
-gamma = 1.0 # hopping rate
-stepsTot = 100 # steps quantum particles takes on lattice
-stepsTotSD = int(stepsTot/4)
-eta = 1.0 # loss rate
-trialsTot = 6 # increase width of tube by one square per trial
+        ArrProb, probsAP = ArrProbSq(H,X,Y,stepsTot)
+        PlotProbsAP = np.zeros((Y,X))
+        for i in range(X*Y):
+            PlotProbsAP[i%Y][int(i/Y)] = probsAP[i]
 
-SDevAll = []
-ArrProbAll = []
+        SDevAll.append(SDev)
+        ArrProbAll.append(ArrProb)
 
-for t in tqdm(range(trialsTot)):
-    H = SquareTube(X,Y)
-
-    SDev,probsSD = SDevSq(H,X,Y,stepsTotSD)
-    PlotProbsSD = np.zeros((Y,X))
-    for i in range(X*Y):
-        PlotProbsSD[i%Y][int(i/Y)] = probsSD[i]
+        Y += 1
 
 
-    ArrProb, probsAP = ArrProbSq(H,X,Y,stepsTot)
-    PlotProbsAP = np.zeros((Y,X))
-    for i in range(X*Y):
-        PlotProbsAP[i%Y][int(i/Y)] = probsAP[i]
+    # plot
 
-    SDevAll.append(SDev)
-    ArrProbAll.append(ArrProb)
+    fig = plt.figure() # (figsize=(7,8), dpi=200)
+    gs1 = gridspec.GridSpec(3, 1)
+    gs1.update(hspace=0.3)
 
-    Y += 1
-
-
-# plot
-
-fig = plt.figure() # (figsize=(7,8), dpi=200)
-gs1 = gridspec.GridSpec(3, 1)
-gs1.update(hspace=0.3)
-
-ax1 = fig.add_subplot(gs1[0,0])
-col1 = ax1.pcolor(PlotProbsAP)
-cbar1 = fig.colorbar(col1, label='probability')
+    ax1 = fig.add_subplot(gs1[0,0])
+    col1 = ax1.pcolor(PlotProbsAP)
+    cbar1 = fig.colorbar(col1, label='probability')
 
 
-gs2 = gridspec.GridSpec(3, 1)
-gs2.update(hspace=0.3)
+    gs2 = gridspec.GridSpec(3, 1)
+    gs2.update(hspace=0.3)
 
-ax2 = fig.add_subplot(gs2[1,0])
-for i in range(trialsTot):
-    plt.plot(np.arange(stepsTot),ArrProbAll[i],label=('width: '+str(Ylabel+i)))
-plt.ylabel('Arrival Probability')
-plt.xlabel('steps')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    ax2 = fig.add_subplot(gs2[1,0])
+    for i in range(trialsTot):
+        plt.plot(np.arange(stepsTot),ArrProbAll[i],label=('width: '+str(Ylabel+i)))
+    plt.ylabel('Arrival Probability')
+    plt.xlabel('steps')
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
-ax3 = fig.add_subplot(gs2[2,0])
-for j in range(trialsTot):
-    plt.plot(np.arange(stepsTotSD),SDevAll[j],label=('width: '+str(Ylabel+j)))
-plt.xlabel('steps')
-plt.ylabel('$\sigma_x$')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    ax3 = fig.add_subplot(gs2[2,0])
+    for j in range(trialsTot):
+        plt.plot(np.arange(stepsTotSD),SDevAll[j],label=('width: '+str(Ylabel+j)))
+    plt.xlabel('steps')
+    plt.ylabel('$\sigma_x$')
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
-plt.show()
+    plt.show()
