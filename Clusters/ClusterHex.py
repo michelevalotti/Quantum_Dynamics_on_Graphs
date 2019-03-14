@@ -175,8 +175,10 @@ if __name__ == '__main__':
     ClusterY = 2
     if orientation == 'horizontal':
         NextConns = (ClusterY*2)+1
+        SDlabel = '$\sigma_x$'
     if orientation == 'vertical':
         NextConns = (ClusterX*2)+2
+        SDlabel = '$\sigma_y$'
     steps = 10
     stepsArrProb = steps*4
     TotTrials = 1
@@ -194,9 +196,9 @@ if __name__ == '__main__':
     GList = [G_Rand,G_AllNext,G_HexNext]
     GListLabel = ['Random Connections', 'Next-Cluster Connections', 'Cluster-Edge Connections']
 
-    # use gs for plotting
+
     gs1 = gridspec.GridSpec(5, 3)
-    SubPlotList = [511,512,513,514,515]
+    gs1.update(hspace=0.5)
 
     ArrProblist = np.zeros((3,stepsArrProb))
 
@@ -208,15 +210,20 @@ if __name__ == '__main__':
             ArrProblist[i] += ArrP
             probs = MyArrP[1]
 
-        # ax1 = fig.add_subplot(SubPlotList[i])
         if orientation == 'horizontal':
             ax1 = fig.add_subplot(gs1[i,:])
-        if orientation == 'vertical':
+        elif orientation == 'vertical':
             ax1 = fig.add_subplot(gs1[:3,i])
-        node_size = probs*(100000/(max(probs)*GList[i].number_of_nodes()))
+            gs1.update(wspace=0.5)
+        node_size = probs*(50000/(max(probs)*GList[i].number_of_nodes()))
         PltNodes = nx.draw_networkx_nodes(GList[i],pos, node_color=probs, node_size=node_size)
         PltEdges = nx.draw_networkx_edges(GList[i],pos)
-        col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        if i < 2 and orientation == 'vertical':
+            col1 = fig.colorbar(PltNodes, shrink=0.9)
+        elif i == 2 and orientation == 'vertical':
+            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        elif orientation == 'horizontal':
+            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
     ArrProblist = ArrProblist/TotTrials
 
@@ -236,23 +243,21 @@ if __name__ == '__main__':
     SDevList = SDevList/TotTrials
 
 
-    # ax2 = fig.add_subplot(514)
     ax2 = fig.add_subplot(gs1[3,:])
 
     for d in range(3):
         plt.plot(np.arange(steps),SDevList[d], label=GListLabel[d])
     plt.xlabel('steps')
-    plt.ylabel('$\sigma_x$ from starting posn')
+    plt.ylabel(SDlabel)
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
-    # ax3 = fig.add_subplot(515)
     ax3 = fig.add_subplot(gs1[4,:])
 
     for a in range(3):
         plt.plot(np.arange(stepsArrProb),ArrProblist[a], label=GListLabel[a])
     plt.xlabel('steps')
-    plt.ylabel('Arrival Probability')
+    plt.ylabel('$P_{arrival}$')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
