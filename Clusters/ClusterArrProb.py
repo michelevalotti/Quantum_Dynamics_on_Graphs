@@ -21,7 +21,7 @@ def ClusterGraph(Clusters,ClusterNodes,ClusterConnections):
     pos = dict()
 
     for cluster in range(Clusters):
-        for c in range(ClusterConnections):
+        for _ in range(ClusterConnections):
             node1 = np.random.randint(ClusterNodes*cluster, ClusterNodes+cluster*ClusterNodes)
             node2 = np.random.randint(ClusterNodes*cluster, ClusterNodes+cluster*ClusterNodes)
             G.add_edge(node1, node2)
@@ -40,7 +40,7 @@ def ConnectRand(G, ConnTot, Clusters):
     TotNodes = G.number_of_nodes()
     ClusterNodes = G.number_of_nodes()/Clusters
 
-    for InterConn in range(ConnTot):
+    for _ in range(ConnTot):
         InterNode1 = np.random.randint(0, TotNodes)
         InterNode2 = np.random.randint(0, TotNodes)
         while(int(InterNode1/ClusterNodes) == int(InterNode2/ClusterNodes)):
@@ -55,7 +55,7 @@ def ConnectNext(G, NextConns, Clusters):
     TotNodes = G.number_of_nodes()
     ClusterNodes = TotNodes/Clusters
 
-    for CNext in range(NextConns):
+    for _ in range(NextConns):
         NextNode1 = np.random.randint(0, TotNodes-(ClusterNodes))
         NextNode2 = np.random.randint((int(NextNode1/ClusterNodes)+1)*ClusterNodes, ((int(NextNode1/ClusterNodes)+2)*ClusterNodes))
 

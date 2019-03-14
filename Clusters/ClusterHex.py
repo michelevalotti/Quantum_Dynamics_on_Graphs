@@ -77,7 +77,7 @@ def ConnectAllNext(G, NextConns, Clusters):
     ClusterNodes = G.number_of_nodes()/Clusters
 
     for C in range(Clusters-1):
-        for CNext in range(NextConns):
+        for _ in range(NextConns):
             NextNode1 = np.random.randint(C*ClusterNodes, (C+1)*ClusterNodes)
             NextNode2 = np.random.randint((C+1)*ClusterNodes, (C+2)*ClusterNodes)
             while(int(NextNode1/ClusterNodes) == int(NextNode2/ClusterNodes)):
@@ -93,7 +93,7 @@ def ConnectHexNext(G, HexY, NextConns, Clusters, orientation):
 
     if orientation == 'horizontal':
         for C in range(Clusters-1):
-            for CNext in range(NextConns):
+            for _ in range(NextConns):
                 NextNode1 = np.random.randint( (C*ClusterNodes)+(ClusterNodes-(2*HexY+1)), (C+1)*ClusterNodes)
                 NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
                 G.add_edge(NextNode1,NextNode2)
@@ -107,7 +107,7 @@ def ConnectHexNext(G, HexY, NextConns, Clusters, orientation):
                     TopNodes.append(k)
                 if v[1] == ((C+1)*(2*HexY+2)+1) or v[1] == (C+1)*(2*HexY+2):
                     BottomNodes.append(k)
-            for CNext in range(NextConns):
+            for _ in range(NextConns):
                 NextNode1 = random.choice(TopNodes)
                 NextNode2 = random.choice(BottomNodes)
                 G.add_edge(NextNode1,NextNode2)
@@ -135,7 +135,7 @@ def HexClusterArr(G,ClusterY,pos,steps,orientation,gamma=1.0,eta=1.0):
                 H[l,l] -= 1j*(eta/2)
 
     if orientation == 'vertical':
-        for k,v in pos.items():
+        for _,v in pos.items():
             MaxY = v[1]
             if v[1] > MaxY:
                 v[1] = MaxY
