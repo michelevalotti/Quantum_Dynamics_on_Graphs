@@ -47,7 +47,6 @@ if __name__ == "__main__":
     Y = 10 # y size of lattice
     Ylabel = Y
     stepsTot = 20
-    eta = 1.0 # loss rate
     trialsTot = 6 # decrease width of tube by one square per trial
 
     SDevRadAll = []
