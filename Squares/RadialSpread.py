@@ -69,7 +69,7 @@ if __name__ == "__main__":
     # plot
 
     fig = plt.figure()
-    gs1 = gridspec.GridSpec(5, 5)
+    gs1 = gridspec.GridSpec(6, 5)
     gs1.update(hspace=0.3)
 
 
@@ -78,10 +78,10 @@ if __name__ == "__main__":
     cbar2 = fig.colorbar(col2, label='probability')
 
 
-    gs2 = gridspec.GridSpec(5, 5)
+    gs2 = gridspec.GridSpec(6, 5)
     gs2.update(hspace=0.3)
 
-    ax5 = fig.add_subplot(gs2[4,:])
+    ax5 = fig.add_subplot(gs2[4:,:])
     for j in range(trialsTot):
         plt.plot(np.arange(stepsTot),SDevRadAll[j],label=('width: '+str(Ylabel-j)))
     plt.xlabel('steps')
