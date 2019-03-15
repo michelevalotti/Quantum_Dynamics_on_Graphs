@@ -71,7 +71,7 @@ if __name__ =='__main__':
 
     MyVar = 'Nodes' # 'Nodes' or 'Edges' -- nodes for variable number of nodes, edges for variable number of edges
     
-    TrialsTot = 1 # avegrage over this many trials
+    TrialsTot = 30 # avegrage over this many trials
 
     # fixed variables
     Clusters = 5
@@ -84,7 +84,7 @@ if __name__ =='__main__':
         ClusterNodes_high = 10
         ClusterConnections = 20
     gamma = 1.0
-    steps = 30
+    steps = 80
 
 
     StandDevArr_next_low_avg = np.zeros(steps)
@@ -177,10 +177,10 @@ if __name__ =='__main__':
         LabelVar_low = NextConns_low
         LabelVar_high = NextConns_high
 
-    plt.plot(np.arange(steps), StandDevArr_next_low_avg, label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar))
-    plt.plot(np.arange(steps), StandDevArr_rand_low_avg, label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar))
-    plt.plot(np.arange(steps), StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
-    plt.plot(np.arange(steps), StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
+    plt.plot(np.arange(steps)[:20], StandDevArr_next_low_avg[:20], label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
+    plt.plot(np.arange(steps)[:20], StandDevArr_rand_low_avg[:20], label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
+    plt.plot(np.arange(steps)/4, StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
+    plt.plot(np.arange(steps)/4, StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
     plt.xlabel('steps')
     plt.ylabel('$\sigma_x$')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
