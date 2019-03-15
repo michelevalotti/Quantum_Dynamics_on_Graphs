@@ -7,7 +7,7 @@ from tqdm import tqdm # progress bar
 
 
 
-def SquareTube(X,Y,gamma=1.0):
+def SquareTube(X,Y,gamma=1.0,structure='tube'):
 
     Adj = np.zeros((Y*X, Y*X))#, dtype=complex) # cannot hop diagonally, enumerate 0-steps**2 starting top left and ending bottom right (going left to right, starting at left)
     degree = np.eye((Y*X), dtype=complex)
@@ -23,9 +23,10 @@ def SquareTube(X,Y,gamma=1.0):
             if j%Y==0:
                 Adj[j-1,j] = 0
 
-            if j % Y == 0:
-                Adj[j,j+(Y-1)] = 1
-                Adj[j+(Y-1),j] = 1
+            if structure == 'tube':
+                if j % Y == 0:
+                    Adj[j,j+(Y-1)] = 1
+                    Adj[j+(Y-1),j] = 1
 
 
     for i in range(Y*X):
@@ -82,6 +83,7 @@ def SDevSq(H,X,Y,stepsTot):
         SDev[step] = StandDev
 
     return SDev, probs
+    
 
 
 if __name__ == '__main__':
@@ -106,7 +108,6 @@ if __name__ == '__main__':
         for i in range(X*Y):
             PlotProbsSD[i%Y][int(i/Y)] = probsSD[i]
 
-
         ArrProb, probsAP = ArrProbSq(H,X,Y,stepsTot)
         PlotProbsAP = np.zeros((Y,X))
         for i in range(X*Y):
@@ -120,7 +121,7 @@ if __name__ == '__main__':
 
     # plot
 
-    fig = plt.figure() # (figsize=(7,8), dpi=200)
+    fig = plt.figure()
     gs1 = gridspec.GridSpec(3, 1)
     gs1.update(hspace=0.3)
 
