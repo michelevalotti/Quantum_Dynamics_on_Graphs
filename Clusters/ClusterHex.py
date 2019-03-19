@@ -175,8 +175,10 @@ if __name__ == '__main__':
     ClusterY = 2
     if orientation == 'horizontal':
         NextConns = (ClusterY*2)+1
+        SDlabel = '$\sigma_x$'
     if orientation == 'vertical':
         NextConns = (ClusterX*2)+2
+        SDlabel = '$\sigma_y$'
     steps = 10
     stepsArrProb = steps*4
     TotTrials = 1
@@ -185,7 +187,7 @@ if __name__ == '__main__':
 
     G = MyHexC[0]
     pos = MyHexC[1]
-    
+
 
     G_Rand = ConnectRand(G.copy(),NextConns*Clusters, Clusters)
     G_AllNext = ConnectAllNext(G.copy(), NextConns, Clusters)
@@ -242,7 +244,7 @@ if __name__ == '__main__':
     for d in range(3):
         plt.plot(np.arange(steps),SDevList[d], label=GListLabel[d])
     plt.xlabel('steps')
-    plt.ylabel('$\sigma_x$ from starting posn')
+    plt.ylabel(SDlabel)
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
