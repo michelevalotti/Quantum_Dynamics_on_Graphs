@@ -77,7 +77,7 @@ def ConnectAllNext(G, NextConns, Clusters):
     ClusterNodes = G.number_of_nodes()/Clusters
 
     for C in range(Clusters-1):
-        for CNext in range(NextConns):
+        for _ in range(NextConns):
             NextNode1 = np.random.randint(C*ClusterNodes, (C+1)*ClusterNodes)
             NextNode2 = np.random.randint((C+1)*ClusterNodes, (C+2)*ClusterNodes)
             while(int(NextNode1/ClusterNodes) == int(NextNode2/ClusterNodes)):
@@ -93,7 +93,7 @@ def ConnectHexNext(G, HexY, NextConns, Clusters, orientation):
 
     if orientation == 'horizontal':
         for C in range(Clusters-1):
-            for CNext in range(NextConns):
+            for _ in range(NextConns):
                 NextNode1 = np.random.randint( (C*ClusterNodes)+(ClusterNodes-(2*HexY+1)), (C+1)*ClusterNodes)
                 NextNode2 = np.random.randint((C+1)*ClusterNodes, ((C+1)*ClusterNodes)+(2*HexY+1) )
                 G.add_edge(NextNode1,NextNode2)
@@ -107,7 +107,7 @@ def ConnectHexNext(G, HexY, NextConns, Clusters, orientation):
                     TopNodes.append(k)
                 if v[1] == ((C+1)*(2*HexY+2)+1) or v[1] == (C+1)*(2*HexY+2):
                     BottomNodes.append(k)
-            for CNext in range(NextConns):
+            for _ in range(NextConns):
                 NextNode1 = random.choice(TopNodes)
                 NextNode2 = random.choice(BottomNodes)
                 G.add_edge(NextNode1,NextNode2)
@@ -135,7 +135,7 @@ def HexClusterArr(G,ClusterY,pos,steps,orientation,gamma=1.0,eta=1.0):
                 H[l,l] -= 1j*(eta/2)
 
     if orientation == 'vertical':
-        for k,v in pos.items():
+        for _,v in pos.items():
             MaxY = v[1]
             if v[1] > MaxY:
                 v[1] = MaxY
@@ -196,9 +196,9 @@ if __name__ == '__main__':
     GList = [G_Rand,G_AllNext,G_HexNext]
     GListLabel = ['Random Connections', 'Next-Cluster Connections', 'Cluster-Edge Connections']
 
-    # use gs for plotting
+
     gs1 = gridspec.GridSpec(5, 3)
-    SubPlotList = [511,512,513,514,515]
+    gs1.update(hspace=0.5)
 
     ArrProblist = np.zeros((3,stepsArrProb))
 
@@ -210,15 +210,20 @@ if __name__ == '__main__':
             ArrProblist[i] += ArrP
             probs = MyArrP[1]
 
-        # ax1 = fig.add_subplot(SubPlotList[i])
         if orientation == 'horizontal':
             ax1 = fig.add_subplot(gs1[i,:])
-        if orientation == 'vertical':
+        elif orientation == 'vertical':
             ax1 = fig.add_subplot(gs1[:3,i])
-        node_size = probs*(100000/(max(probs)*GList[i].number_of_nodes()))
+            gs1.update(wspace=0.5)
+        node_size = probs*(50000/(max(probs)*GList[i].number_of_nodes()))
         PltNodes = nx.draw_networkx_nodes(GList[i],pos, node_color=probs, node_size=node_size)
         PltEdges = nx.draw_networkx_edges(GList[i],pos)
-        col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        if i < 2 and orientation == 'vertical':
+            col1 = fig.colorbar(PltNodes, shrink=0.9)
+        elif i == 2 and orientation == 'vertical':
+            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        elif orientation == 'horizontal':
+            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
     ArrProblist = ArrProblist/TotTrials
 
@@ -238,7 +243,6 @@ if __name__ == '__main__':
     SDevList = SDevList/TotTrials
 
 
-    # ax2 = fig.add_subplot(514)
     ax2 = fig.add_subplot(gs1[3,:])
 
     for d in range(3):
@@ -248,13 +252,12 @@ if __name__ == '__main__':
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 
-    # ax3 = fig.add_subplot(515)
     ax3 = fig.add_subplot(gs1[4,:])
 
     for a in range(3):
         plt.plot(np.arange(stepsArrProb),ArrProblist[a], label=GListLabel[a])
     plt.xlabel('steps')
-    plt.ylabel('Arrival Probability')
+    plt.ylabel('$P_{arrival}$')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 

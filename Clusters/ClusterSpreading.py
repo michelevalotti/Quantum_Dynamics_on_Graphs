@@ -84,7 +84,7 @@ if __name__ =='__main__':
         ClusterNodes_high = 10
         ClusterConnections = 20
     gamma = 1.0
-    steps = 30
+    steps = 80
 
 
     StandDevArr_next_low_avg = np.zeros(steps)
@@ -105,27 +105,28 @@ if __name__ =='__main__':
         if MyVar == 'Edges':
             NextConns_low = 15
 
-        G = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[0]
-        pos = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[1]
-        TotNodes = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections)[2]
+        G = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections,ClusterDist=20)[0]
+        pos = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections,ClusterDist=10)[1] # to calculate SD
+        posDraw = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections,ClusterDist=20)[1] # to plot graph
+        TotNodes = ClusterGraph(Clusters, ClusterNodes_low, ClusterConnections,ClusterDist=20)[2]
 
         # next conns, low nodes/edges
-        G_next = ConnectNext(G, NextConns_low, Clusters)
-        StandDevArr_next_low = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[0]
+        G_next = ConnectNext(G.copy(), NextConns_low, Clusters)
+        StandDevArr_next_low = StandardDeviation(G_next, nx.adjacency_matrix(G_next), ClusterLen, pos, steps)[0]
         StandDevArr_next_low_avg += StandDevArr_next_low
-        probs_next = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[1]
+        probs_next = StandardDeviation(G_next, nx.adjacency_matrix(G_next), ClusterLen, pos, steps)[1]
 
         # rand conns, low nodes/edges
-        G_rand = ConnectRand(G, NextConns_low, Clusters)
-        StandDevArr_rand_low = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[0]
+        G_rand = ConnectRand(G.copy(), NextConns_low, Clusters)
+        StandDevArr_rand_low = StandardDeviation(G_rand, nx.adjacency_matrix(G_rand), ClusterLen, pos, steps)[0]
         StandDevArr_rand_low_avg += StandDevArr_rand_low
-        probs_rand = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[1]
+        probs_rand = StandardDeviation(G_rand, nx.adjacency_matrix(G_rand), ClusterLen, pos, steps)[1]
 
         if trial == 0:
             ax1 = fig.add_subplot(311)
             node_size = probs_next*(100000/(max(probs_next)*TotNodes)) # rescale so size of node is never too small or too big
-            PltNodes = nx.draw_networkx_nodes(G_next, pos, node_color=probs_next, node_size=node_size)
-            PltEdges = nx.draw_networkx_edges(G_next, pos)
+            PltNodes = nx.draw_networkx_nodes(G_next, posDraw, node_color=probs_next, node_size=node_size)
+            PltEdges = nx.draw_networkx_edges(G_next, posDraw)
             col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
 
@@ -136,27 +137,28 @@ if __name__ =='__main__':
         if MyVar == 'Edges':
             NextConns_high = 60
 
-        G = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[0]
-        pos = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[1]
-        TotNodes = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections)[2]
+        G = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections,ClusterDist=20)[0]
+        pos = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections,ClusterDist=10)[1]
+        posDraw = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections,ClusterDist=20)[1]
+        TotNodes = ClusterGraph(Clusters, ClusterNodes_high, ClusterConnections,ClusterDist=20)[2]
 
         # next conns, low nodes/edges
         G_next = ConnectNext(G, NextConns_high, Clusters)
-        StandDevArr_next_high = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[0]
+        StandDevArr_next_high = StandardDeviation(G_next, nx.adjacency_matrix(G_next), ClusterLen, pos, steps)[0]
         StandDevArr_next_high_avg += StandDevArr_next_high
-        probs_next = StandardDeviation(G_next, ClusterLen, pos, steps, gamma)[1]
+        probs_next = StandardDeviation(G_next, nx.adjacency_matrix(G_next), ClusterLen, pos, steps)[1]
 
         # rand conns, low nodes/edges
         G_rand = ConnectRand(G, NextConns_high, Clusters)
-        StandDevArr_rand_high = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[0]
+        StandDevArr_rand_high = StandardDeviation(G_rand, nx.adjacency_matrix(G_rand), ClusterLen, pos, steps)[0]
         StandDevArr_rand_high_avg += StandDevArr_rand_high
-        probs_rand = StandardDeviation(G_rand, ClusterLen, pos, steps, gamma)[1]
+        probs_rand = StandardDeviation(G_rand, nx.adjacency_matrix(G_rand), ClusterLen, pos, steps)[1]
 
         if trial == 0:
             ax2 = fig.add_subplot(312)
             node_size = probs_rand*(100000/(max(probs_rand)*TotNodes)) # rescale so size of node is never too small or too big
-            PltNodes = nx.draw_networkx_nodes(G_rand, pos, node_color=probs_rand, node_size=node_size)
-            PltEdges = nx.draw_networkx_edges(G_rand, pos)
+            PltNodes = nx.draw_networkx_nodes(G_rand, posDraw, node_color=probs_rand, node_size=node_size)
+            PltEdges = nx.draw_networkx_edges(G_rand, posDraw)
             col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
 
@@ -175,12 +177,12 @@ if __name__ =='__main__':
         LabelVar_low = NextConns_low
         LabelVar_high = NextConns_high
 
-    plt.plot(np.arange(steps), StandDevArr_next_low_avg, label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar))
-    plt.plot(np.arange(steps), StandDevArr_rand_low_avg, label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar))
-    plt.plot(np.arange(steps), StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar))
-    plt.plot(np.arange(steps), StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar))
+    plt.plot(np.arange(steps)[:20], StandDevArr_next_low_avg[:20], label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
+    plt.plot(np.arange(steps)[:20], StandDevArr_rand_low_avg[:20], label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
+    plt.plot(np.arange(steps)/4, StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
+    plt.plot(np.arange(steps)/4, StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
     plt.xlabel('steps')
-    plt.ylabel('$\sigma_x$ from starting posn')
+    plt.ylabel('$\sigma_x$')
     plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
     plt.subplots_adjust(right=0.7)
 

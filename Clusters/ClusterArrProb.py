@@ -6,7 +6,7 @@ from tqdm import tqdm
 import scipy.linalg
 
 
-def ClusterGraph(Clusters,ClusterNodes,ClusterConnections):
+def ClusterGraph(Clusters,ClusterNodes,ClusterConnections,ClusterDist):
     '''generate random graph of unconnected clusters, each with same fixed number of nodes and edges'''
 
     TotNodes = Clusters*ClusterNodes
@@ -21,12 +21,12 @@ def ClusterGraph(Clusters,ClusterNodes,ClusterConnections):
     pos = dict()
 
     for cluster in range(Clusters):
-        for c in range(ClusterConnections):
+        for _ in range(ClusterConnections):
             node1 = np.random.randint(ClusterNodes*cluster, ClusterNodes+cluster*ClusterNodes)
             node2 = np.random.randint(ClusterNodes*cluster, ClusterNodes+cluster*ClusterNodes)
             G.add_edge(node1, node2)
 
-        X_G = np.random.uniform(float(cluster*20),float(cluster*20+10),ClusterNodes)
+        X_G = np.random.uniform(float(cluster*ClusterDist),float(cluster*ClusterDist+10),ClusterNodes)
         Y_G = np.random.uniform(0.0,15.0,ClusterNodes)
 
         for j in range(ClusterNodes):
@@ -40,7 +40,7 @@ def ConnectRand(G, ConnTot, Clusters):
     TotNodes = G.number_of_nodes()
     ClusterNodes = G.number_of_nodes()/Clusters
 
-    for InterConn in range(ConnTot):
+    for _ in range(ConnTot):
         InterNode1 = np.random.randint(0, TotNodes)
         InterNode2 = np.random.randint(0, TotNodes)
         while(int(InterNode1/ClusterNodes) == int(InterNode2/ClusterNodes)):
@@ -55,7 +55,7 @@ def ConnectNext(G, NextConns, Clusters):
     TotNodes = G.number_of_nodes()
     ClusterNodes = TotNodes/Clusters
 
-    for CNext in range(NextConns):
+    for _ in range(NextConns):
         NextNode1 = np.random.randint(0, TotNodes-(ClusterNodes))
         NextNode2 = np.random.randint((int(NextNode1/ClusterNodes)+1)*ClusterNodes, ((int(NextNode1/ClusterNodes)+2)*ClusterNodes))
 
@@ -150,7 +150,7 @@ if __name__ == '__main__':
 
             print(Clusters, ' clusters, ', 'total number of nodes: ', Clusters*ClusterNodes)
 
-            MyGraph = ClusterGraph(Clusters,ClusterNodes,ClusterConnections) # generate graph (no inter cluster connections)
+            MyGraph = ClusterGraph(Clusters,ClusterNodes,ClusterConnections,ClusterDist=10) # generate graph (no inter cluster connections)
             G = MyGraph[0]
             pos = MyGraph[1]
             TotNodes = MyGraph[2]
