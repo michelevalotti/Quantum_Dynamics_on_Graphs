@@ -98,13 +98,14 @@ plt.plot(xAx, probs,  'o', markersize=3, color='#FFA339')
 plt.plot(xAx[0::2], posnCl, label='classical random walk', color='b') # [1::2]
 plt.xlabel('position')
 plt.ylabel('probability')
-plt.legend()
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
 
 ax2 = fig.add_subplot(212)
-plt.plot(np.arange(steps), StandDevArr, label='quantum')
-plt.plot(np.arange(steps), SDevCl,label='classical')
+plt.plot(np.arange(steps), StandDevArr, color='r')
+plt.plot(np.arange(steps), SDevCl, color='b')
 plt.xlabel('steps')
 plt.ylabel('$\sigma_x$')
-plt.legend()
+
+plt.subplots_adjust(right=0.8)
 
 plt.show()
