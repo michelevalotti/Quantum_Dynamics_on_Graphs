@@ -75,7 +75,7 @@ def SDevHexRad(H,HexX,HexY,pos,stepsTot):
 
     for i in range(len(H[0])):
         xPosns[i] = pos[i][0]
-        yPosns[i] = pos[i][1]
+        yPosns[i] = pos[i][1]/2
         RadialDist[i] = np.sqrt((abs(xPosns[i]-middleX)**2)+(abs(yPosns[i]-middleY)**2))
 
     for step in (range(stepsTot)):
