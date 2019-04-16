@@ -4,7 +4,7 @@ import scipy.linalg
 
 N = 31 # size of side of lattice (best if odd)
 gamma = 0.3 # hopping rate
-steps = 15 # steps quantum particles takes on lattice
+steps = 40 # steps quantum particles takes on lattice
 potPsn = 67
 
 Zero = np.array([1,0]) # ket 0
@@ -64,15 +64,15 @@ for i in range(N**2):
 
 H = gamma*(degree-Adj)
 
-# # add potential to reflective edges
-# H[potPsn,potPsn] += 8
+# add potential to reflective edges
+H[potPsn,potPsn] += 8
 
 U = scipy.linalg.expm(-1j*H*steps)
 
 Htorus = gamma*(degreeTorus-AdjTorus)
 
-# # add potential to torus
-# Htorus[potPsn,potPsn] += 8
+# add potential to torus
+Htorus[potPsn,potPsn] += 8
 
 Utorus = scipy.linalg.expm(-1j*Htorus*steps)
 
