@@ -64,7 +64,7 @@ def ConnectNext(G, NextConns, Clusters):
     return G
 
 
-def ClusterArrivalProb(G,ConnTrials,steps,Clusters,InterClusterConn,gamma,eta):
+def ClusterArrivalProb(G,ConnTrials,steps,Clusters,InterClusterConn,pos,gamma=1.0,eta=1.0):
     '''add edges between clusters and record probability that quantum walker reacher cluster on the opposite side'''
 
     TotNodes = G.number_of_nodes()
@@ -93,7 +93,7 @@ def ClusterArrivalProb(G,ConnTrials,steps,Clusters,InterClusterConn,gamma,eta):
         H += gamma*(Deg-Adj)
 
         for key, val in pos.items():
-            if (val[0] >= Clusters*20-20 and val[0] <= Clusters*20):
+            if (val[0] >= Clusters*10-10 and val[0] <= Clusters*10):
                 H[key,key] -= 1j*(eta/2)
 
 
@@ -124,11 +124,9 @@ if __name__ == '__main__':
     ClusterNodes = 20 # number of nodes in each cluster
     ClusterConnections = 40 # number of edges in each cluster
     InterClusterConn = 5 # initial number of edges between clusters
-    gamma = 1.0
-    eta = 1.0
-    ConnTrials = 10 # each trial adds an inter-cluster edge
-    ClusterTrials = 3 # each trial adds a cluster
-    TotTrials = 1
+    ConnTrials = 40 # each trial adds an inter-cluster edge
+    ClusterTrials = 6 # each trial adds a cluster
+    TotTrials = 3
 
 
     ArrivalProbsAll = []
@@ -155,7 +153,7 @@ if __name__ == '__main__':
             pos = MyGraph[1]
             TotNodes = MyGraph[2]
 
-            MyClusterProb = ClusterArrivalProb(G,ConnTrials,steps,Clusters,InterClusterConn,gamma,eta) # add inter cluster connections and measure arrival prob
+            MyClusterProb = ClusterArrivalProb(G,ConnTrials,steps,Clusters,InterClusterConn,pos) # add inter cluster connections and measure arrival prob
 
             G_init = MyClusterProb[0]
             G = MyClusterProb[1]
