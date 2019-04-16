@@ -88,7 +88,7 @@ xAx = np.arange(N)
 
 # plot
 
-fig = plt.figure(figsize=(13,5))
+fig = plt.figure(figsize=(13,5), dpi=200)
 
 # plt.title('comparing classical and quantum random walks')
 
@@ -96,15 +96,17 @@ ax1 = fig.add_subplot(211)
 plt.plot(xAx, probs, label='continuous quantum walk', color='r')
 plt.plot(xAx, probs,  'o', markersize=3, color='#FFA339')
 plt.plot(xAx[0::2], posnCl, label='classical random walk', color='b') # [1::2]
-plt.xlabel('position')
-plt.ylabel('probability')
-plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+plt.xlabel('position', fontsize=14)
+plt.ylabel('probability', fontsize=14)
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
+ax1.tick_params(labelsize=14)
 
 ax2 = fig.add_subplot(212)
 plt.plot(np.arange(steps), StandDevArr, color='r')
 plt.plot(np.arange(steps), SDevCl, color='b')
-plt.xlabel('steps')
-plt.ylabel('$\sigma_x$')
+plt.xlabel('steps', fontsize=14)
+plt.ylabel('$\sigma_x$', fontsize=14)
+ax2.tick_params(labelsize=14)
 
 plt.subplots_adjust(right=0.8)
 

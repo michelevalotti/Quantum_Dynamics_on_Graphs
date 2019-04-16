@@ -291,13 +291,13 @@ if __name__ == "__main__":
 
     # add loss site at end of the tube and record probability that leaves the system
 
-    N = 20 # y
-    M = 2 # x - horizontal cylinder (M > N) only works if this is even
+    N = 4 # y
+    M = 40 # x - horizontal cylinder (M > N) only works if this is even
     gamma = 1.0
-    steps = 10
+    steps = 400
     stepsSDev = int(steps) # reaches maximum deviation quicker than ArrivalProb, but is also interesting to see long term behaviour
     eta = 1.0 # loss rate
-    ChiralShift = 1 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
+    ChiralShift = 0 # wraps tube around with a shift of 2*ChiralShift units in the x (skips one hexagon)
 
     MyGraph = HexTube(M,N,ChiralShift)
 
@@ -328,7 +328,7 @@ if __name__ == "__main__":
     xAx = np.arange(steps)
 
     if M < N: # vertical graph
-        fig = plt.figure(figsize=(7,8), dpi=200)
+        fig = plt.figure(figsize=(12,6), dpi=200)
         gs1 = gridspec.GridSpec(11, 3)
         gs1.update(hspace=0.0, right=0.85)
 
@@ -337,34 +337,35 @@ if __name__ == "__main__":
         node_size = probs*(100000/(max(probs)*nodes))
         PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
         PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
-        col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
-        col1.ax.tick_params(labelsize=10)
-        ax1.tick_params(labelsize=10)
+        col1 = fig.colorbar(PltNodes, shrink=0.9)
+        col1.set_label('Probability', fontsize=14)
+        col1.ax.tick_params(labelsize=14)
+        ax1.tick_params(labelsize=14)
 
         gs2=gridspec.GridSpec(11,3)
         gs2.update(left=0.1, right=0.85, hspace=0.0)
 
         ax2 = fig.add_subplot(gs2[1:4,:2])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Avg Position', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('Avg Posn', fontsize=14)
         plt.plot(xAx, runningAvg)
-        ax2.tick_params(labelsize=12)
+        ax2.tick_params(labelsize=14)
 
         ax3 = fig.add_subplot(gs2[4:7,:2])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('$P_{arrival}$', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('$P_{arrival}$', fontsize=14)
         plt.plot(xAx, EndProb)
-        ax3.tick_params(labelsize=12)
+        ax3.tick_params(labelsize=14)
 
         ax4 = fig.add_subplot(gs2[7:10,:2])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('$\sigma_y$', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('$\sigma_y$', fontsize=14)
         plt.plot(np.arange(stepsSDev), SDev)
-        ax4.tick_params(labelsize=12)
+        ax4.tick_params(labelsize=14)
 
 
     if M > N: # horizontal graph
-        fig = plt.figure(figsize=(7,8), dpi=200)
+        fig = plt.figure(figsize=(12,8), dpi=200)
         gs1 = gridspec.GridSpec(10, 3)
         gs1.update(hspace=20.0)
 
@@ -373,30 +374,31 @@ if __name__ == "__main__":
         node_size = probs*(100000/(max(probs)*nodes))
         PltNodes = nx.draw_networkx_nodes(G, pos, node_color=probs, node_size=node_size, with_label=False)
         PltEdges = nx.draw_networkx_edges(G, pos, edge_color=edge_colors)
-        col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
-        col1.ax.tick_params(labelsize=10)
-        ax1.tick_params(labelsize=10)
+        col1 = fig.colorbar(PltNodes, shrink=0.9)
+        col1.set_label('Probability', fontsize=14)
+        col1.ax.tick_params(labelsize=14)
+        ax1.tick_params(labelsize=14)
 
 
         gs2=gridspec.GridSpec(10,3)
         gs2.update(left=0.125, right=0.745, hspace=0.0)
 
         ax2 = fig.add_subplot(gs2[4:6,:])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('Avg Position', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('Avg Posn', fontsize=14)
         plt.plot(xAx, runningAvg)
-        ax2.tick_params(labelsize=12)
+        ax2.tick_params(labelsize=14)
 
         ax3 = fig.add_subplot(gs2[6:8,:])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('$P_{arrival}$', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('$P_{arrival}$', fontsize=14)
         plt.plot(xAx, EndProb)
-        ax3.tick_params(labelsize=12)
+        ax3.tick_params(labelsize=14)
 
         ax4 = fig.add_subplot(gs2[8:10,:])
-        plt.xlabel('steps', fontsize=12)
-        plt.ylabel('$\sigma_x$', fontsize=12)
+        plt.xlabel('steps', fontsize=14)
+        plt.ylabel('$\sigma_x$', fontsize=14)
         plt.plot(np.arange(stepsSDev), SDev)
-        ax4.tick_params(labelsize=12)
+        ax4.tick_params(labelsize=14)
 
     plt.show()

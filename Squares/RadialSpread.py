@@ -67,24 +67,28 @@ if __name__ == "__main__":
 
     # plot
 
-    fig = plt.figure()
-    gs1 = gridspec.GridSpec(6, 5)
-    gs1.update(hspace=0.3)
+    fig = plt.figure(figsize=(14,4), dpi=200)
+    # gs1 = gridspec.GridSpec(6, 5)
+    # gs1.update(hspace=0.3)
 
 
-    ax2 = fig.add_subplot(gs1[:4,1:4])
-    col2 = ax2.pcolor(PlotProbsRad)
-    cbar2 = fig.colorbar(col2, label='probability')
+    # ax2 = fig.add_subplot(gs1[:4,1:4])
+    # col2 = ax2.pcolor(PlotProbsRad)
+    # cbar2 = fig.colorbar(col2, label='probability')
 
 
-    gs2 = gridspec.GridSpec(6, 5)
-    gs2.update(hspace=0.3)
+    # gs2 = gridspec.GridSpec(6, 5)
+    # gs2.update(hspace=0.3)
 
-    ax5 = fig.add_subplot(gs2[4:,:])
+    # ax5 = fig.add_subplot(gs2[4:,:])
+    ax5 = fig.add_subplot(111)
     for j in range(trialsTot):
         plt.plot(np.arange(stepsTot),SDevRadAll[j],label=('width: '+str(Ylabel-j)))
-    plt.xlabel('steps')
-    plt.ylabel('$\sigma_r$')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel('steps', fontsize=18)
+    plt.ylabel('$\sigma_r$', fontsize=18)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=18)
+    ax5.tick_params(labelsize=18)
+    plt.subplots_adjust(right=0.9)
+
 
     plt.show()

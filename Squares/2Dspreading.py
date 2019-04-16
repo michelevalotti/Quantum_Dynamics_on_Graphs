@@ -121,30 +121,40 @@ if __name__ == '__main__':
 
     # plot
 
-    fig = plt.figure()
+    fig = plt.figure(dpi=200, figsize=(14,8))
     gs1 = gridspec.GridSpec(3, 1)
-    gs1.update(hspace=0.3)
+    gs1.update(hspace=0.45)
 
     ax1 = fig.add_subplot(gs1[0,0])
     col1 = ax1.pcolor(PlotProbsAP)
-    cbar1 = fig.colorbar(col1, label='probability')
+    cbar1 = fig.colorbar(col1)
+    cbar1.set_label('Probability', fontsize=18)
+    cbar1.ax.tick_params(labelsize=18)
+    plt.xlabel('x', fontsize=18)
+    plt.ylabel('y', fontsize=18)
+    ax1.tick_params(labelsize=18)
+
 
 
     gs2 = gridspec.GridSpec(3, 1)
-    gs2.update(hspace=0.3)
+    gs2.update(hspace=0.45, right=0.8)
 
     ax2 = fig.add_subplot(gs2[1,0])
     for i in range(trialsTot):
         plt.plot(np.arange(stepsTot),ArrProbAll[i],label=('width: '+str(Ylabel+i)))
-    plt.ylabel('Arrival Probability')
-    plt.xlabel('steps')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.ylabel('$P_{arrival}$', fontsize=18)
+    plt.xlabel('steps', fontsize=18)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1.1), fontsize=14)
+    ax2.tick_params(labelsize=18)
+
 
     ax3 = fig.add_subplot(gs2[2,0])
     for j in range(trialsTot):
         plt.plot(np.arange(stepsTotSD),SDevAll[j],label=('width: '+str(Ylabel+j)))
-    plt.xlabel('steps')
-    plt.ylabel('$\sigma_x$')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel('steps', fontsize=18)
+    plt.ylabel('$\sigma_x$', fontsize=18)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1.1), fontsize=14)
+    ax3.tick_params(labelsize=18)
+
 
     plt.show()

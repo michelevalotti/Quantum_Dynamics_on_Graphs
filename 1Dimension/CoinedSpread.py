@@ -95,24 +95,27 @@ for n in tqdm(range(N)):
 
 # plot
 
-fig = figure(figsize=(10,5))
+fig = figure(figsize=(14,5), dpi=200)
 
 # title('comparing classical and quantum random walks')
 
-ax1 = fig.add_subplot(211)
-plot(arange(P)[1::2], prob, label='coined quantum walk', color='r')
-plot(arange(P)[1::2], prob,  'o', markersize=3, color='#FFA339')
-plot(arange(P)[1::2], posnCl, label='classical random walk', color='b') # [1::2]
-xlabel('position')
-ylabel('probability')
-legend(loc='upper left', bbox_to_anchor=(1, 1))
+# ax1 = fig.add_subplot(211)
+# plot(arange(P)[1::2], prob, label='coined quantum walk', color='r')
+# plot(arange(P)[1::2], prob,  'o', markersize=3, color='#FFA339')
+# plot(arange(P)[1::2], posnCl, label='classical random walk', color='b') # [1::2]
+# xlabel('position')
+# ylabel('probability')
+# legend(loc='upper left', bbox_to_anchor=(1, 1))
 
-ax2 = fig.add_subplot(212)
-plot(arange(N), StandDevArr, color='r')
-plot(arange(N), SDevCl, color='b')
-xlabel('steps')
-ylabel('$\sigma_x$')
+ax2 = fig.add_subplot(111)
+plot(arange(N), StandDevArr, color='r', label='coined quantum walk')
+plot(arange(N), SDevCl, color='b', label='classical random walk')
+xlabel('steps', fontsize=14)
+ylabel('$\sigma_x$', fontsize=14)
+ax2.tick_params(labelsize=14)
 
-subplots_adjust(right=0.8)
+legend(loc='upper left', bbox_to_anchor=(1,1), fontsize=14)
+
+subplots_adjust(right=0.7)
 
 show()

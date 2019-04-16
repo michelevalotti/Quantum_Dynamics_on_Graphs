@@ -69,9 +69,9 @@ if __name__ =='__main__':
     '''fixed nodes and varying edges (random or next)
     or fixed edges (random or next) and varying nodes'''
 
-    MyVar = 'Nodes' # 'Nodes' or 'Edges' -- nodes for variable number of nodes, edges for variable number of edges
+    MyVar = 'Edges' # 'Nodes' or 'Edges' -- nodes for variable number of nodes, edges for variable number of edges
     
-    TrialsTot = 30 # avegrage over this many trials
+    TrialsTot = 10 # avegrage over this many trials
 
     # fixed variables
     Clusters = 5
@@ -84,7 +84,7 @@ if __name__ =='__main__':
         ClusterNodes_high = 10
         ClusterConnections = 20
     gamma = 1.0
-    steps = 80
+    steps = 20
 
 
     StandDevArr_next_low_avg = np.zeros(steps)
@@ -93,7 +93,7 @@ if __name__ =='__main__':
     StandDevArr_rand_high_avg = np.zeros(steps)
 
             
-    fig = plt.figure()
+    fig = plt.figure(figsize=(14,21), dpi=200)
 
 
     for trial in tqdm(range(TrialsTot)):
@@ -177,13 +177,18 @@ if __name__ =='__main__':
         LabelVar_low = NextConns_low
         LabelVar_high = NextConns_high
 
-    plt.plot(np.arange(steps)[:20], StandDevArr_next_low_avg[:20], label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
-    plt.plot(np.arange(steps)[:20], StandDevArr_rand_low_avg[:20], label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version
-    plt.plot(np.arange(steps)/4, StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
-    plt.plot(np.arange(steps)/4, StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar) + ' rescaled') # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
-    plt.xlabel('steps')
-    plt.ylabel('$\sigma_x$')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    # plt.plot(np.arange(steps)[:20], StandDevArr_next_low_avg[:20], label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version np.arange(steps)[:20], StandDevArr_next_low_avg[:20]
+    # plt.plot(np.arange(steps)[:20], StandDevArr_rand_low_avg[:20], label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version np.arange(steps)[:20], StandDevArr_rand_low_avg[:20]
+    # plt.plot(np.arange(steps)/4, StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same np.arange(steps)/4
+    # plt.plot(np.arange(steps)/4, StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
+    plt.plot(np.arange(steps), StandDevArr_next_low_avg, label=('next-cluster connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version np.arange(steps)[:20], StandDevArr_next_low_avg[:20]
+    plt.plot(np.arange(steps), StandDevArr_rand_low_avg, label=('random connections - ' + str(LabelVar_low) + ' ' + MyVar)) # slice both arrays at nodeslow when comparing to rescaled version np.arange(steps)[:20], StandDevArr_rand_low_avg[:20]
+    plt.plot(np.arange(steps), StandDevArr_next_high_avg, label=('next-cluster connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same np.arange(steps)/4
+    plt.plot(np.arange(steps), StandDevArr_rand_high_avg, label=('random connections - ' + str(LabelVar_high) + ' ' + MyVar)) # divide steps by nodeshigh/nodeslow to rescale, sigmax should then be the same
+    plt.xlabel('steps', fontsize=16)
+    plt.ylabel('$\sigma_x$', fontsize=16)
+    ax3.tick_params(labelsize=16)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=16)
     plt.subplots_adjust(right=0.7)
 
     plt.show()

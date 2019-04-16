@@ -167,19 +167,19 @@ if __name__ == '__main__':
 
     # plot
 
-    fig = plt.figure()
+    fig = plt.figure(figsize=(14,14), dpi=200)
 
     orientation = 'horizontal' # 'vertical' or 'horizontal'
-    Clusters = 10 # keep higher than 1
-    ClusterX = 2
-    ClusterY = 2
+    Clusters = 20 # keep higher than 1
+    ClusterX = 1
+    ClusterY = 4
     if orientation == 'horizontal':
         NextConns = (ClusterY*2)+1
         SDlabel = '$\sigma_x$'
     if orientation == 'vertical':
         NextConns = (ClusterX*2)+2
         SDlabel = '$\sigma_y$'
-    steps = 10
+    steps = 100
     stepsArrProb = steps*4
     TotTrials = 1
 
@@ -210,20 +210,20 @@ if __name__ == '__main__':
             ArrProblist[i] += ArrP
             probs = MyArrP[1]
 
-        if orientation == 'horizontal':
-            ax1 = fig.add_subplot(gs1[i,:])
-        elif orientation == 'vertical':
-            ax1 = fig.add_subplot(gs1[:3,i])
-            gs1.update(wspace=0.5)
-        node_size = probs*(50000/(max(probs)*GList[i].number_of_nodes()))
-        PltNodes = nx.draw_networkx_nodes(GList[i],pos, node_color=probs, node_size=node_size)
-        PltEdges = nx.draw_networkx_edges(GList[i],pos)
-        if i < 2 and orientation == 'vertical':
-            col1 = fig.colorbar(PltNodes, shrink=0.9)
-        elif i == 2 and orientation == 'vertical':
-            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
-        elif orientation == 'horizontal':
-            col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        # if orientation == 'horizontal':
+        #     ax1 = fig.add_subplot(gs1[i,:])
+        # elif orientation == 'vertical':
+        #     ax1 = fig.add_subplot(gs1[:3,i])
+        #     gs1.update(wspace=0.5)
+        # node_size = probs*(50000/(max(probs)*GList[i].number_of_nodes()))
+        # PltNodes = nx.draw_networkx_nodes(GList[i],pos, node_color=probs, node_size=node_size)
+        # PltEdges = nx.draw_networkx_edges(GList[i],pos)
+        # if i < 2 and orientation == 'vertical':
+        #     col1 = fig.colorbar(PltNodes, shrink=0.9)
+        # elif i == 2 and orientation == 'vertical':
+        #     col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+        # elif orientation == 'horizontal':
+        #     col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
     ArrProblist = ArrProblist/TotTrials
 
@@ -243,22 +243,24 @@ if __name__ == '__main__':
     SDevList = SDevList/TotTrials
 
 
-    ax2 = fig.add_subplot(gs1[3,:])
+    ax2 = fig.add_subplot(gs1[1:3,:])
 
     for d in range(3):
         plt.plot(np.arange(steps),SDevList[d], label=GListLabel[d])
-    plt.xlabel('steps')
-    plt.ylabel(SDlabel)
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel('steps', fontsize=16)
+    plt.ylabel(SDlabel, fontsize=16)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=16)
     plt.subplots_adjust(right=0.7)
+    ax2.tick_params(labelsize=16)
 
-    ax3 = fig.add_subplot(gs1[4,:])
+    ax3 = fig.add_subplot(gs1[3:,:])
 
     for a in range(3):
         plt.plot(np.arange(stepsArrProb),ArrProblist[a], label=GListLabel[a])
-    plt.xlabel('steps')
-    plt.ylabel('$P_{arrival}$')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
+    plt.xlabel('steps', fontsize=16)
+    plt.ylabel('$P_{arrival}$', fontsize=16)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=16)
     plt.subplots_adjust(right=0.7)
+    ax3.tick_params(labelsize=16)
 
     plt.show()

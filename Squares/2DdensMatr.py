@@ -7,9 +7,9 @@ from tqdm import tqdm # progress bar
 
 N = 17 # size of side of lattice #19
 gamma = 1.0 # hopping rate
-steps = 10 # steps quantum particles takes on lattice #11
+steps = 9 # steps quantum particles takes on lattice #11
 initialPosn = 8 #9
-decRate = 0.2 # decoherence rate -- starts to break normalization (decreasing probability with more steps, or higher than 1 if rate > 1)
+decRate = 0.8 # decoherence rate -- starts to break normalization (decreasing probability with more steps, or higher than 1 if rate > 1)
 
 Adj = np.zeros((N**2,N**2)) # cannot hop diagonally, enumerate 0-steps**2 starting top left and ending bottom right (going left to right, starting at left)
 degree = np.eye(N**2)
@@ -129,8 +129,8 @@ plt.axis('off')
 
 ax2 = plt.subplot(gs[0])
 plt.plot(probsY, xAx)
-plt.xlabel('$P_{tot}$', fontsize=14)
-plt.ylabel('y', rotation=0, fontsize=14)
+plt.xlabel('$P_{tot}$', fontsize=18)
+plt.ylabel('y', rotation=0, fontsize=18)
 ax2.xaxis.tick_top()
 ax2.xaxis.set_label_position('top') 
 ax2.yaxis.labelpad = 10
@@ -139,8 +139,8 @@ ax2.tick_params(labelsize=14)
 
 ax3 = plt.subplot(gs[3])
 plt.plot(xAx, probsX)
-plt.ylabel('$P_{tot}$', rotation=0, fontsize=14)
-plt.xlabel('x', fontsize=14)
+plt.ylabel('$P_{tot}$', rotation=0, fontsize=18)
+plt.xlabel('x', fontsize=18)
 ax3.yaxis.tick_right()
 ax3.yaxis.set_label_position('right')
 ax3.yaxis.labelpad = 12

@@ -128,26 +128,27 @@ if __name__ == '__main__':
 
     # plot
 
-    fig = plt.figure()
-    gs1 = gridspec.GridSpec(6, 5)
-    gs1.update(hspace=0.3)
+    fig = plt.figure(figsize=(14,4), dpi=200)
+    # gs1 = gridspec.GridSpec(6, 5)
+    # gs1.update(hspace=0.3)
 
 
-    ax2 = fig.add_subplot(gs1[:4,1:4])
-    node_size = PlotProbs*(100000/(max(PlotProbs)*len(H[0])))
-    PltNodes = nx.draw_networkx_nodes(G, pos, node_color=PlotProbs, node_size=node_size, with_label=False)
-    PltEdges = nx.draw_networkx_edges(G, pos)
-    col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
+    # ax2 = fig.add_subplot(gs1[:4,1:4])
+    # node_size = PlotProbs*(100000/(max(PlotProbs)*len(H[0])))
+    # PltNodes = nx.draw_networkx_nodes(G, pos, node_color=PlotProbs, node_size=node_size, with_label=False)
+    # PltEdges = nx.draw_networkx_edges(G, pos)
+    # col1 = fig.colorbar(PltNodes, label='Probability', shrink=0.9)
 
 
-    gs2 = gridspec.GridSpec(6, 5)
-    gs2.update(hspace=0.3)
+    # gs2 = gridspec.GridSpec(6, 5)
+    # gs2.update(hspace=0.3)
 
-    ax5 = fig.add_subplot(gs2[4:,:])
+    # ax5 = fig.add_subplot(gs2[4:,:])
+    ax5 = fig.add_subplot(111)
     for j in range(trialsTot):
         plt.plot(np.arange(stepsTot),SDevRadAll[j],label=('Hexagons in Y: '+str(HexYlabel+j)))
-    plt.xlabel('steps')
-    plt.ylabel('$\sigma_r$')
-    plt.legend(loc='upper left', bbox_to_anchor=(1, 1))
-
+    plt.xlabel('steps', fontsize=18)
+    plt.ylabel('$\sigma_r$', fontsize=18)
+    plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=18)
+    plt.tick_params(labelsize=18)
     plt.show()

@@ -158,7 +158,7 @@ for i in range(2): # horizontal first and vertical second
 
 
 
-fig = plt.figure()
+fig = plt.figure(figsize=(14,6), dpi=200)
 
 ax1 = fig.add_subplot(121)
 plt.plot(LenOfTubeHor_length, StepsToArrivalHor_length, 'o')
@@ -167,9 +167,10 @@ plt.plot(LenOfTubeVert_length, StepsToArrivalVert_length, 'o')
 plt.plot(LenOfTubeVert_length, StepsToArrivalVert_length, label='armchair', color='r')
 plt.plot(LenOfTubeChiral_length, StepsToArrivalChiral_length, 'o')
 plt.plot(LenOfTubeChiral_length, StepsToArrivalChiral_length, label='chiral', color='g')
-plt.legend()
-plt.xlabel('length of tube')
-plt.ylabel('steps')
+# plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
+ax1.tick_params(labelsize=14)
+plt.xlabel('length of tube', fontsize=14)
+plt.ylabel('steps', fontsize=14)
 
 ax2 = fig.add_subplot(122)
 plt.plot(LenOfTubeHor_width, StepsToArrivalHor_width, 'o')
@@ -178,8 +179,12 @@ plt.plot(LenOfTubeVert_width, StepsToArrivalVert_width, 'o')
 plt.plot(LenOfTubeVert_width, StepsToArrivalVert_width, label='armchair', color='r')
 plt.plot(LenOfTubeChiral_width, StepsToArrivalChiral_width, 'o')
 plt.plot(LenOfTubeChiral_width, StepsToArrivalChiral_width, label='chiral', color='g')
-plt.legend()
-plt.xlabel('width of tube')
-plt.ylabel('steps')
+plt.legend(loc='upper left', bbox_to_anchor=(1, 1), fontsize=14)
+ax2.tick_params(labelsize=14)
+plt.xlabel('width of tube', fontsize=14)
+plt.ylabel('steps', fontsize=14)
+
+
+# plt.subplots_adjust(wspace=0.5)
 
 plt.show()

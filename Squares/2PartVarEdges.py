@@ -11,7 +11,7 @@ steps = 0
 init1 = 14 # initial position of part 1 (bottom left is 0, grows to the right and up, starts at left of every new row)
 init2 = 21 # initial posn of part2
 initialPosn = (init1*(N*M - 1)) + (init2-1) # element of initial vector with value one
-stepsTot = 20 # steps quantum particles takes on lattice
+stepsTot = 40 # steps quantum particles takes on lattice
 eta = 0.5 # loss rate
 LossSite = 13
 
@@ -88,17 +88,17 @@ ProbMatr = np.zeros((((M*N)**2) - (N*M),((M*N)**2) - (N*M)))
 for n in range(((M*N)**2) - (N*M)):
 	for m in range(((M*N)**2) - (N*M)):
 		if ((dist[m] <= DistSectors[0]) and (dist[n] <= DistSectors[0])):
-			ProbMatr[m,n] = 1.0
-		elif (dist[m] < DistSectors[0] and dist[n] >= DistSectors[0]) or (dist[m] >= DistSectors[0] and dist[n] < DistSectors[0]):
 			ProbMatr[m,n] = 0.1
+		elif (dist[m] < DistSectors[0] and dist[n] >= DistSectors[0]) or (dist[m] >= DistSectors[0] and dist[n] < DistSectors[0]):
+			ProbMatr[m,n] = 0.9
 		elif (((dist[m] > DistSectors[0]) and (dist[n] > DistSectors[0])) and ((dist[m] <= DistSectors[1]) and (dist[n] <= DistSectors[1]))):
 			ProbMatr[m,n] = 0.4
 		elif (dist[m] < DistSectors[1] and dist[n] >= DistSectors[1]) or (dist[m] >= DistSectors[1] and dist[n] < DistSectors[1]):
-			ProbMatr[m,n] = 0.1
+			ProbMatr[m,n] = 0.9
 		elif (((dist[m] > DistSectors[1]) and (dist[n] > DistSectors[1])) and ((dist[m] <= DistSectors[2]) and (dist[n] <= DistSectors[2]))):
-			ProbMatr[m,n] = 0.1
-		elif (positions[m][0] == positions[n][1]) and (positions[m][1] == positions[n][0]): # particles exchange position
 			ProbMatr[m,n] = 1.0
+		elif (positions[m][0] == positions[n][1]) and (positions[m][1] == positions[n][0]): # particles exchange position
+			ProbMatr[m,n] = 0.0
 
 
 for i in range(((M*N)**2) - (N*M)):
@@ -224,21 +224,21 @@ print('total probability: ', sum(weights))
 
 xAx = np.arange(stepsTot)
 
-fig = plt.figure(figsize=(8,5), dpi=200)
+fig = plt.figure(figsize=(10,5), dpi=200)
 
 # fig.suptitle('2 particles evolution - reflective edges - shape of graph: '+str(N)+' x '+ str(M), fontsize=8)
 
-ax1 = fig.add_subplot(211)
-plt.plot(xAx, meanDist)
-plt.xlabel('steps', fontsize=14, labelpad=1)
-plt.ylabel('inst distance', fontsize=14)
-ax1.tick_params(labelsize=14)
+# ax1 = fig.add_subplot(211)
+# plt.plot(xAx, meanDist)
+# plt.xlabel('steps', fontsize=14, labelpad=1)
+# plt.ylabel('inst distance', fontsize=14)
+# ax1.tick_params(labelsize=14)
 
-ax2 = fig.add_subplot(212)
+ax2 = fig.add_subplot(111)
 plt.plot(xAx, runningAvg)
-plt.xlabel('steps', fontsize=14, labelpad=1)
-plt.ylabel('mean distance', fontsize=14)
-ax2.tick_params(labelsize=14)
+plt.xlabel('steps', fontsize=24, labelpad=1)
+plt.ylabel('mean distance', fontsize=24)
+ax2.tick_params(labelsize=24)
 
 plt.subplots_adjust(hspace=0.0)
 
