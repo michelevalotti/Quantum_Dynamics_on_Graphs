@@ -175,7 +175,7 @@ if __name__ == '__main__':
     ClusterY = 4
     if orientation == 'horizontal':
         NextConns = (ClusterY*2)+1
-        SDlabel = '$\sigma_x$'
+        SDlabel = '$\sigma_y$'
     if orientation == 'vertical':
         NextConns = (ClusterX*2)+2
         SDlabel = '$\sigma_y$'
