@@ -4,8 +4,8 @@ import scipy.linalg
 from tqdm import tqdm # progress bar
 
 N = 101 # length of line
-gamma = 0.4 # hopping rate
-steps = 51 # keep odd for plotting classical 
+gamma = 1.0 # hopping rate
+steps = 21 # keep odd for plotting classical 
 initialPosn = int(N/2)
 
 
