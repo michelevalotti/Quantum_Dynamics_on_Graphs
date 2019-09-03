@@ -14,5 +14,5 @@ Simulations include coined (discrete in space and time) and continuous (discrete
   Simulations include multiple (2) particles, a search algorithm, and measures of the transport properties through standard deviation (ibear and radial) and distance between particles. The simulations are run on a square lattices and one of the scripts allows to vary the length of the edges.
   - Hexagons \
   Simulations include a 2 dimensional flat hexagonal lattice and a pseudo 3 dimensional one that mimics carbon nanotubes, where the particle moves on the surface of the tube. Transport properties are also measured through the arrival probability, or the probability for the particle to reach one end of the tube.
-  -Clusters \
+  - Clusters \
   Simulations include graphs formed by random clusters and clusters with a regualar, hexagonal pattern, connected in more or less symmetric ways. Transport properties are measured through standard deviation and arrival probability, and the results are compared to those obtained on the more symmetric carbon nanotubes. Here we find that a regular pattern is fundamental in the efficiency of transport for particles on a graph, and even small irregularties cause a significant drop in the speed of transport.
